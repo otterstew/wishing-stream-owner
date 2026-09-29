@@ -45,8 +45,22 @@ function el(tag, props = {}, ...children) {
 let enrolFactorId = null;
 
 // Works out which step the current session is at and shows it. Called on load
-// and whenever Supabase reports the session changed.
-async function route() {
+// and whenever Supabase reports the session changed, and those overlap: the
+// page loading from a sign-in link fires both at once. Two routes running
+// together both saw no factor and both tried to enrol one, and the second
+// failed on the duplicate name. So one runs at a time, and a call that arrives
+// while one is running makes it look again once it has finished.
+let routing = null;
+let routeAgain = false;
+function route() {
+  if (routing) { routeAgain = true; return routing; }
+  routing = (async () => {
+    do { routeAgain = false; await routeOnce(); } while (routeAgain);
+  })().finally(() => { routing = null; });
+  return routing;
+}
+
+async function routeOnce() {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { clearData(); show("step-email"); return; }
 
@@ -67,6 +81,10 @@ async function route() {
 // factor behind, and a new one cannot be enrolled beside it with the same
 // name, so those are cleared first.
 async function startEnrolment(factors) {
+  // Already showing a QR code for a factor that still exists: keep it. A new
+  // one would change the code under someone halfway through scanning it.
+  const pending = (factors?.all ?? []).find((f) => f.id === enrolFactorId && f.status === "unverified");
+  if (pending) { show("step-enrol"); return; }
   for (const f of factors?.all ?? []) {
     if (f.status === "unverified") await sb.auth.mfa.unenroll({ factorId: f.id });
   }
