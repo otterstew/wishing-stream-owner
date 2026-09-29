@@ -88,12 +88,19 @@ $("email-form").addEventListener("submit", async (e) => {
     // too; this is the second lock on the same door.
     options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname },
   });
-  // The same message either way, so the form does not confirm which address
-  // is the owner's.
-  say(error && !/signups not allowed|not found/i.test(error.message)
-    ? `Could not send the link: ${error.message}`
-    : "If that address is the owner's, a sign-in link is on its way. Open it in this browser.",
-    error && !/signups not allowed|not found/i.test(error.message) ? "bad" : "");
+  // Say plainly when no link was sent. An earlier version gave the same
+  // reassuring message either way, to avoid confirming which address is the
+  // owner's; with one owner that protects nothing, and it hid the one failure
+  // that matters: an invited account that has not accepted its invite is
+  // treated as a new sign-up, and sign-ups are off.
+  if (!error) {
+    say("A sign-in link is on its way. Open it in this browser.");
+  } else if (error.code === "signup_disabled" || /signups not allowed/i.test(error.message)) {
+    say("No link was sent: this address cannot sign in yet. If you have been invited, " +
+      "open the invite email and accept it first, then ask for a link again.", "bad");
+  } else {
+    say(`No link was sent: ${error.message}`, "bad");
+  }
 });
 
 $("enrol-form").addEventListener("submit", async (e) => {
