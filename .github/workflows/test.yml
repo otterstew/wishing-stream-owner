@@ -1,0 +1,19 @@
+# Runs the calendar arithmetic tests on every push. GitHub Pages serves the
+# site from main on its own; this only catches a date bug before it is live.
+
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Test calendar arithmetic
+        run: deno run --no-config tests/calendar_test.js

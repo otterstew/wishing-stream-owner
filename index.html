@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <!--
+    Only this page's own files, the pinned Supabase client from jsdelivr, and
+    the project's own API. data: images are the authenticator QR code, which
+    Supabase returns as an SVG data URL.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src https://wqncpiokoaqwhpcwtawd.supabase.co; base-uri 'none'; form-action 'none'">
+  <title>Wishing Stream owner</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Wishing Stream</h1>
+    <button id="sign-out" class="link" hidden>Sign out</button>
+  </header>
+
+  <main>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+
+    <!-- Step 1: email link. -->
+    <section id="step-email" class="card narrow" hidden>
+      <h2>Sign in</h2>
+      <form id="email-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required>
+        <button type="submit">Send sign-in link</button>
+      </form>
+      <p class="hint">Open the link in this browser. It signs you in here.</p>
+    </section>
+
+    <!-- Step 2a: first time only, set up the authenticator. -->
+    <section id="step-enrol" class="card narrow" hidden>
+      <h2>Set up Google Authenticator</h2>
+      <p>In Google Authenticator, tap <strong>+</strong>, then <strong>Scan a QR code</strong>.</p>
+      <img id="qr" alt="QR code for the authenticator app" width="200" height="200">
+      <details>
+        <summary>Can't scan it?</summary>
+        <p>Choose <strong>Enter a setup key</strong> and type this key:</p>
+        <code id="secret" class="secret"></code>
+      </details>
+      <form id="enrol-form">
+        <label for="enrol-code">Then enter the 6-digit code it shows</label>
+        <input id="enrol-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+        <button type="submit">Confirm</button>
+      </form>
+    </section>
+
+    <!-- Step 2b: every sign-in after that. -->
+    <section id="step-code" class="card narrow" hidden>
+      <h2>Authenticator code</h2>
+      <form id="code-form">
+        <label for="code">6-digit code from Google Authenticator</label>
+        <input id="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required>
+        <button type="submit">Continue</button>
+      </form>
+    </section>
+
+    <!-- Signed in. -->
+    <div id="app" hidden>
+      <section class="card">
+        <h2>Next two weeks</h2>
+        <ol id="upcoming" class="upcoming"></ol>
+      </section>
+
+      <section class="card">
+        <div class="month-bar">
+          <button id="prev" class="nav" aria-label="Previous month">‹</button>
+          <h2 id="month-title"></h2>
+          <button id="next" class="nav" aria-label="Next month">›</button>
+          <button id="this-month" class="link">Today</button>
+        </div>
+        <div class="grid-scroll">
+          <div id="grid" class="grid" role="table" aria-label="Stays by property"></div>
+        </div>
+        <ul class="legend">
+          <li><span class="key key-guest"></span>Guest stay</li>
+          <li><span class="key key-block"></span>Owner block</li>
+          <li><span class="key key-turn"></span>Same-day turnover</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Vrbo feeds</h2>
+        <ul id="feeds" class="feeds"></ul>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"
+          integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok"
+          crossorigin="anonymous"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
