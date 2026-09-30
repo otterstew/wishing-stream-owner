@@ -342,12 +342,12 @@ function renderGuests() {
 
   const list = $("guest-list");
   list.replaceChildren();
-  // Upcoming first (soonest at the top), then the last 30 days.
-  const ordered = [...upcoming, ...stays.filter((s) => s.checkout < today).reverse()];
-  for (const s of ordered) {
-    const past = s.checkout < today;
+  // Upcoming and current stays only, soonest first. Past stays are left out:
+  // Vrbo removes the email once a stay is over, so there is nothing to ask for.
+  if (upcoming.length === 0) list.append(el("li", { class: "empty" }, "No upcoming stays."));
+  for (const s of upcoming) {
     const g = s.guest;
-    const li = el("li", { class: past ? "past" : "" },
+    const li = el("li", {},
       el("div", { class: "g-head" },
         el("span", { class: "g-name" }, g?.name ?? "Guest not known yet"),
         el("span", { class: "g-when" }, `${fmtDate(s.checkin)} → ${fmtDate(s.checkout)} · ${s.gite}`)),
@@ -357,14 +357,14 @@ function renderGuests() {
     if (g?.phone) {
       li.append(el("a", { class: "g-phone", href: `tel:${g.phone}` }, g.phone));
     }
-    if (g) li.append(contactForm(g, past));
+    if (g) li.append(contactForm(g));
     list.append(li);
   }
 }
 
 // An email field when the guest has none (and a phone field when Vrbo gave
 // none); otherwise the email, as text. Saved through the owner route.
-function contactForm(g, past) {
+function contactForm(g) {
   if (g.email && g.phone) return el("div", { class: "g-email" }, g.email);
   const form = el("form", { class: "g-form" });
   const fields = [];
@@ -382,7 +382,6 @@ function contactForm(g, past) {
   const btn = el("button", { type: "submit" }, "Save");
   const msg = el("span", { class: "g-msg", role: "status" });
   form.append(btn, msg);
-  if (past && !g.email) form.classList.add("quiet");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const body = {};
