@@ -82,8 +82,10 @@ export function upcoming(stays, today, days) {
 
 // A feed is stale when its last success is more than `maxDays` ago, or it has
 // never succeeded. The gap between last attempt and last success is how a feed
-// that has been failing quietly becomes visible.
-export function feedHealth(feed, now, maxDays = 7) {
+// that has been failing quietly becomes visible. The scheduled sync runs every
+// three hours, so a day without a success is eight missed runs, not a quiet
+// week.
+export function feedHealth(feed, now, maxDays = 1) {
   if (!feed.active) return "inactive";
   if (!feed.last_success_at) return "never";
   const age = (now - Date.parse(feed.last_success_at)) / 86_400_000;

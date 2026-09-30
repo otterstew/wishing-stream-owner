@@ -86,10 +86,14 @@ eq("upcoming: same day at two properties is two lines", upcoming([
 // ---- feed health ----
 const now = Date.parse("2026-09-29T12:00:00Z");
 eq("feed: fresh", feedHealth({ active: true, last_success_at: "2026-09-29T10:00:00Z", last_status: "ok" }, now), "ok");
-eq("feed: not modified is fine", feedHealth({ active: true, last_success_at: "2026-09-28T10:00:00Z", last_status: "not_modified" }, now), "ok");
+eq("feed: not modified is fine", feedHealth({ active: true, last_success_at: "2026-09-29T09:17:00Z", last_status: "not_modified" }, now), "ok");
 eq("feed: never synced", feedHealth({ active: true, last_success_at: null, last_status: null }, now), "never");
 eq("feed: failing", feedHealth({ active: true, last_success_at: "2026-09-20T10:00:00Z", last_status: "http_404" }, now), "failing");
 eq("feed: stale", feedHealth({ active: true, last_success_at: "2026-09-10T10:00:00Z", last_status: "ok" }, now), "stale");
+eq("feed: a day and a half without a success is stale",
+  feedHealth({ active: true, last_success_at: "2026-09-28T00:00:00Z", last_status: "ok" }, now), "stale");
+eq("feed: twenty hours is fine",
+  feedHealth({ active: true, last_success_at: "2026-09-28T16:00:00Z", last_status: "not_modified" }, now), "ok");
 eq("feed: inactive", feedHealth({ active: false, last_success_at: null }, now), "inactive");
 
 console.log(`${pass} passed, ${fail} failed`);
