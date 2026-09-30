@@ -86,6 +86,25 @@
         </ul>
       </section>
 
+      <!-- Closed by default: the calendar is what gets glanced at over someone's
+           shoulder, and the money should not be on it. Loaded when opened. -->
+      <details id="money" class="card money">
+        <summary><h2>Money</h2><span class="hint-inline">gross received, by the date Vrbo paid</span></summary>
+        <div class="money-bar">
+          <button id="money-prev" class="nav" aria-label="Previous year">‹</button>
+          <h3 id="money-year"></h3>
+          <button id="money-next" class="nav" aria-label="Next year">›</button>
+        </div>
+        <table class="figures" aria-label="URSSAF figures by quarter">
+          <thead><tr><th>Quarter</th><th>Classified (LMTC)</th><th>Declare</th><th>Unclassified</th><th class="net-col">Net received</th></tr></thead>
+          <tbody id="quarters"></tbody>
+        </table>
+        <h3 class="sub">Each gîte, year so far</h3>
+        <ul id="gites" class="gites"></ul>
+        <p id="bankcheck" class="bankcheck"></p>
+        <p class="hint">Only Vrbo payouts imported so far are counted. Direct bookings are not in these figures.</p>
+      </details>
+
       <section class="card">
         <h2>Vrbo feeds</h2>
         <ul id="feeds" class="feeds"></ul>

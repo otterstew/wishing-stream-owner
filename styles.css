@@ -160,7 +160,40 @@ details { margin: 0.5rem 0; }
 .feed-failing .feed-state { color: var(--bad); }
 .feed-inactive .feed-state { color: var(--muted); }
 
+/* Money */
+.money summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+.money summary::-webkit-details-marker { display: none; }
+.money summary h2 { margin: 0; }
+.money summary h2::before { content: "▸ "; color: var(--muted); }
+.money[open] summary h2::before { content: "▾ "; }
+.hint-inline { color: var(--muted); font-size: 0.85rem; }
+.money-bar { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem; }
+.money-bar h3 { margin: 0; min-width: 4rem; text-align: center; font-size: 1rem; }
+.figures { width: 100%; border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.figures th, .figures td { text-align: right; padding: 0.45rem 0.4rem; border-top: 1px solid var(--line); }
+.figures thead th { color: var(--muted); font-weight: 500; font-size: 0.8rem; border-top: 0; }
+.figures th:first-child { text-align: left; }
+.figures .declare { font-weight: 700; }
+.figures .empty-row { color: var(--muted); }
+h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
+.gites { list-style: none; margin: 0; padding: 0; }
+.gites li { display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--line); }
+.gites li:first-child { border-top: 0; }
+.gite-name { font-weight: 600; }
+.gite-sum { grid-column: 1 / -1; color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.badge { font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; align-self: center; }
+.badge.classified { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.badge.unclassified { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.bankcheck { margin: 1rem 0 0; font-size: 0.9rem; }
+.bankcheck.ok { color: var(--good); }
+.bankcheck.pending { color: var(--warn); }
+
 @media (max-width: 480px) {
+  .figures { font-size: 0.8rem; }
+  /* Net is the least useful column for URSSAF; on a phone it is the one that
+     pushes the table out of its card. The per-gîte list still shows net. */
+  .figures .net-col { display: none; }
+  .figures th, .figures td { padding: 0.4rem 0.2rem; }
   .grid { --name: 5.5rem; }
   .row { grid-auto-rows: 2.6rem; }
   .name { font-size: 0.8rem; }

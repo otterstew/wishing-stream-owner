@@ -177,7 +177,10 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds"]) $(id).replaceChildren();
+  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites"]) $(id).replaceChildren();
+  $("bankcheck").textContent = "";
+  $("money").open = false;
+  moneyYear = null;
   $("month-title").textContent = "";
   names = new Map();
 }
@@ -283,6 +286,8 @@ function renderMonth(r, data) {
 const ago = (iso) => {
   if (!iso) return "never";
   const mins = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  // A device clock a little ahead of the server's must not say "−3 min ago".
+  if (mins < 1) return "just now";
   if (mins < 60) return `${mins} min ago`;
   const hours = Math.round(mins / 60);
   if (hours < 48) return `${hours} h ago`;
@@ -302,6 +307,64 @@ function renderFeeds(feeds) {
       f.last_error ? el("span", { class: "feed-error" }, f.last_error) : null));
   }
 }
+
+// ---- money (O3) ----
+
+let moneyYear = null;
+const eur = (cents) => {
+  const sign = cents < 0 ? "−" : "";
+  const a = Math.abs(cents);
+  return `${sign}€${Math.floor(a / 100).toLocaleString("en-GB")}.${String(a % 100).padStart(2, "0")}`;
+};
+const eurWhole = (n) => `€${n.toLocaleString("en-GB")}`;
+const dayFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+
+async function loadMoney() {
+  try {
+    const m = await api(`/money?year=${moneyYear ?? ""}`);
+    moneyYear = m.year;
+    renderMoney(m);
+  } catch (e) {
+    say(e.message, "bad");
+  }
+}
+
+function renderMoney(m) {
+  $("money-year").textContent = String(m.year);
+  const tbody = $("quarters");
+  tbody.replaceChildren();
+  const current = m.today.startsWith(String(m.year)) ? Math.floor((Number(m.today.slice(5, 7)) - 1) / 3) + 1 : 0;
+  for (const q of m.quarters) {
+    const empty = q.lines === 0;
+    const label = `Q${q.quarter}` + (q.quarter === current ? " (so far)" : "");
+    tbody.append(el("tr", { class: empty ? "empty-row" : "" },
+      el("th", { scope: "row" }, label),
+      el("td", {}, empty ? "—" : eur(q.lmtc)),
+      el("td", { class: "declare" }, empty ? "—" : eurWhole(q.declare)),
+      el("td", {}, empty ? "—" : (q.unclassified ? eur(q.unclassified) : "none")),
+      el("td", { class: "net-col" }, empty ? "—" : eur(q.net))));
+  }
+  const list = $("gites");
+  list.replaceChildren();
+  for (const p of m.properties) {
+    const c = p.classification;
+    list.append(el("li", {},
+      el("span", { class: "gite-name" }, p.name),
+      el("span", { class: `badge ${c ? "classified" : "unclassified"}` },
+        c ? `${c.stars}★ until ${dayFmt.format(new Date(`${c.expires_on}T00:00:00Z`))}` : "Unclassified"),
+      el("span", { class: "gite-sum" }, `${eur(p.gross)} gross · ${eur(p.net)} net`)));
+  }
+  const b = m.bank;
+  $("bankcheck").textContent = b.lines === 0 ? "" : b.matched === b.lines
+    ? `✓ All ${b.lines} Vrbo payments this year have been seen arriving in the bank.`
+    : `${b.lines - b.matched} of ${b.lines} Vrbo payments (${eur(b.unmatched_net)}) not yet seen in the bank. ` +
+      "Import a newer statement to check them.";
+  $("bankcheck").className = `bankcheck ${b.matched === b.lines ? "ok" : "pending"}`;
+}
+
+$("money").addEventListener("toggle", () => { if ($("money").open) loadMoney(); });
+$("money-prev").addEventListener("click", () => { moneyYear -= 1; loadMoney(); });
+$("money-next").addEventListener("click", () => { moneyYear += 1; loadMoney(); });
 
 $("prev").addEventListener("click", () => { month = shiftMonth(month, -1); loadMonth().catch((e) => say(e.message, "bad")); });
 $("next").addEventListener("click", () => { month = shiftMonth(month, 1); loadMonth().catch((e) => say(e.message, "bad")); });
