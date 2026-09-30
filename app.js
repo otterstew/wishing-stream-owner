@@ -177,7 +177,10 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review"]) $(id).replaceChildren();
+  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list"]) $(id).replaceChildren();
+  $("guests-prompt").textContent = "";
+  $("guests").open = false;
+  guestData = null;
   $("bankcheck").textContent = "";
   $("money").open = false;
   moneyYear = null;
@@ -197,6 +200,7 @@ async function load() {
     await loadMonth();
     const { feeds } = await api("/feeds");
     renderFeeds(feeds);
+    await loadGuests();
   } catch (e) {
     say(e.message, "bad");
   }
@@ -216,7 +220,10 @@ async function loadMonth() {
 
 const dateFmt = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 const monthFmt = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
-const fmtDate = (d) => dateFmt.format(new Date(`${d}T00:00:00Z`));
+const dateFmtYear = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+// The year only when it is not this year: next summer's bookings are already
+// in, and "Mon 19 Jul" alone would read as this July.
+const fmtDate = (d) => (d.slice(0, 4) === today.slice(0, 4) ? dateFmt : dateFmtYear).format(new Date(`${d}T00:00:00Z`));
 
 function renderUpcoming(events) {
   const list = $("upcoming");
@@ -306,6 +313,101 @@ function renderFeeds(feeds) {
       el("span", { class: "feed-when" }, `Last success ${ago(f.last_success_at)}`),
       f.last_error ? el("span", { class: "feed-error" }, f.last_error) : null));
   }
+}
+
+// ---- guests (O2) ----
+
+let guestData = null;
+
+async function loadGuests() {
+  try {
+    guestData = await api("/guests");
+    renderGuests();
+  } catch (e) {
+    say(e.message, "bad");
+  }
+}
+
+function renderGuests() {
+  if (!guestData) return;
+  const { today, stays } = guestData;
+  const upcoming = stays.filter((s) => s.checkout >= today);
+  const missing = upcoming.filter((s) => s.guest && !s.guest.email).length;
+  const unknown = upcoming.filter((s) => !s.guest).length;
+  const bits = [];
+  if (missing) bits.push(`${missing} upcoming guest${missing === 1 ? "" : "s"} need${missing === 1 ? "s" : ""} an email`);
+  if (unknown) bits.push(`${unknown} stay${unknown === 1 ? "" : "s"} with no guest details yet`);
+  $("guests-prompt").textContent = bits.join(" · ") || "all upcoming guests have an email";
+  $("guests-prompt").className = `hint-inline ${missing ? "prompt" : ""}`;
+
+  const list = $("guest-list");
+  list.replaceChildren();
+  // Upcoming first (soonest at the top), then the last 30 days.
+  const ordered = [...upcoming, ...stays.filter((s) => s.checkout < today).reverse()];
+  for (const s of ordered) {
+    const past = s.checkout < today;
+    const g = s.guest;
+    const li = el("li", { class: past ? "past" : "" },
+      el("div", { class: "g-head" },
+        el("span", { class: "g-name" }, g?.name ?? "Guest not known yet"),
+        el("span", { class: "g-when" }, `${fmtDate(s.checkin)} → ${fmtDate(s.checkout)} · ${s.gite}`)),
+      el("div", { class: "g-meta" },
+        s.party ? `${s.party} guests` : null,
+        s.reservation ? el("span", { class: "g-ref" }, s.reservation) : null));
+    if (g?.phone) {
+      li.append(el("a", { class: "g-phone", href: `tel:${g.phone}` }, g.phone));
+    }
+    if (g) li.append(contactForm(g, past));
+    list.append(li);
+  }
+}
+
+// An email field when the guest has none (and a phone field when Vrbo gave
+// none); otherwise the email, as text. Saved through the owner route.
+function contactForm(g, past) {
+  if (g.email && g.phone) return el("div", { class: "g-email" }, g.email);
+  const form = el("form", { class: "g-form" });
+  const fields = [];
+  if (g.email) form.append(el("div", { class: "g-email" }, g.email));
+  else {
+    const i = el("input", { type: "email", placeholder: "Guest's email", autocomplete: "off", "aria-label": `Email for ${g.name ?? "guest"}` });
+    fields.push(["email", i]);
+    form.append(i);
+  }
+  if (!g.phone) {
+    const i = el("input", { type: "tel", placeholder: "Phone, with country code", autocomplete: "off", "aria-label": `Phone for ${g.name ?? "guest"}` });
+    fields.push(["phone", i]);
+    form.append(i);
+  }
+  const btn = el("button", { type: "submit" }, "Save");
+  const msg = el("span", { class: "g-msg", role: "status" });
+  form.append(btn, msg);
+  if (past && !g.email) form.classList.add("quiet");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const body = {};
+    for (const [k, i] of fields) if (i.value.trim()) body[k] = i.value.trim();
+    if (!Object.keys(body).length) { msg.textContent = "Nothing to save."; return; }
+    btn.disabled = true;
+    msg.textContent = "Saving…";
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      const res = await fetch(`${OWNER_API}/guests/${g.id}/contact`, {
+        method: "POST",
+        headers: { authorization: `Bearer ${session.access_token}`, "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const r = await res.json().catch(() => ({}));
+      if (!res.ok) { msg.textContent = r.error ?? `Not saved (${res.status}).`; btn.disabled = false; return; }
+      if (r.email) g.email = r.email;
+      if (r.phone) g.phone = r.phone;
+      renderGuests();
+    } catch (err) {
+      msg.textContent = err.message;
+      btn.disabled = false;
+    }
+  });
+  return form;
 }
 
 // ---- money (O3) ----

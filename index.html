@@ -86,6 +86,14 @@
         </ul>
       </section>
 
+      <!-- Guests: closed by default like Money, but the heading always says how
+           many upcoming guests still need an email, which Vrbo never gives. -->
+      <details id="guests" class="card money">
+        <summary><h2>Guests</h2><span id="guests-prompt" class="hint-inline"></span></summary>
+        <p class="hint">Vrbo gives each guest's name, phone and party, but not their email. Add it when you have it.</p>
+        <ul id="guest-list" class="guest-list"></ul>
+      </details>
+
       <!-- Closed by default: the calendar is what gets glanced at over someone's
            shoulder, and the money should not be on it. Loaded when opened. -->
       <details id="money" class="card money">

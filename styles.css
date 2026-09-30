@@ -205,6 +205,25 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .rv-desc, .rv-why { grid-column: 1 / -1; font-size: 0.9rem; overflow-wrap: anywhere; }
 .rv-why { color: var(--warn); }
 
+/* Guests */
+.hint-inline.prompt { color: var(--warn); font-weight: 600; }
+.guest-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+.guest-list > li { padding: 0.75rem 0; border-top: 1px solid var(--line); }
+.guest-list > li:first-child { border-top: 0; }
+.guest-list > li.past { opacity: 0.6; }
+.g-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.1rem 1rem; }
+.g-name { font-weight: 600; }
+.g-when, .g-meta { color: var(--muted); font-size: 0.9rem; }
+.g-meta { display: flex; gap: 0.75rem; }
+.g-ref { font-variant-numeric: tabular-nums; }
+.g-phone { display: inline-block; margin-top: 0.3rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+.g-email { margin-top: 0.3rem; font-size: 0.95rem; overflow-wrap: anywhere; }
+.g-form { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
+.g-form input { flex: 1 1 12rem; padding: 0.45rem 0.6rem; }
+.g-form button { margin: 0; padding: 0.45rem 0.9rem; }
+.g-msg { font-size: 0.85rem; color: var(--muted); flex-basis: 100%; }
+.g-msg:empty { display: none; }
+
 @media (max-width: 480px) {
   .figures { font-size: 0.8rem; }
   /* Net is the least useful column for URSSAF; on a phone it is the one that
