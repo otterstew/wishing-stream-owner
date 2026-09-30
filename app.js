@@ -177,7 +177,7 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list"]) $(id).replaceChildren();
+  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list", "past-list"]) $(id).replaceChildren();
   $("guests-prompt").textContent = "";
   $("guests").open = false;
   guestData = null;
@@ -342,10 +342,20 @@ function renderGuests() {
 
   const list = $("guest-list");
   list.replaceChildren();
-  // Upcoming and current stays only, soonest first. Past stays are left out:
-  // Vrbo removes the email once a stay is over, so there is nothing to ask for.
+  // Upcoming and current stays first, soonest at the top, with the prompt.
   if (upcoming.length === 0) list.append(el("li", { class: "empty" }, "No upcoming stays."));
-  for (const s of upcoming) {
+  for (const s of upcoming) list.append(guestItem(s));
+
+  // Past guests: everyone who has stayed, most recent first, no prompt — Vrbo
+  // removes the email after a stay — but an email can still be added.
+  const past = stays.filter((s) => s.checkout < today && s.guest).reverse();
+  $("past-count").textContent = past.length ? `${past.length}` : "none yet";
+  const pl = $("past-list");
+  pl.replaceChildren();
+  for (const s of past) pl.append(guestItem(s));
+}
+
+function guestItem(s) {
     const g = s.guest;
     const li = el("li", {},
       el("div", { class: "g-head" },
@@ -358,8 +368,7 @@ function renderGuests() {
       li.append(el("a", { class: "g-phone", href: `tel:${g.phone}` }, g.phone));
     }
     if (g) li.append(contactForm(g));
-    list.append(li);
-  }
+    return li;
 }
 
 // An email field when the guest has none (and a phone field when Vrbo gave
