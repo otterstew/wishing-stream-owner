@@ -177,7 +177,7 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites"]) $(id).replaceChildren();
+  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review"]) $(id).replaceChildren();
   $("bankcheck").textContent = "";
   $("money").open = false;
   moneyYear = null;
@@ -354,12 +354,49 @@ function renderMoney(m) {
         c ? `${c.stars}★ until ${dayFmt.format(new Date(`${c.expires_on}T00:00:00Z`))}` : "Unclassified"),
       el("span", { class: "gite-sum" }, `${eur(p.gross)} gross · ${eur(p.net)} net`)));
   }
+  renderCosts(m.costs);
   const b = m.bank;
   $("bankcheck").textContent = b.lines === 0 ? "" : b.matched === b.lines
     ? `✓ All ${b.lines} Vrbo payments this year have been seen arriving in the bank.`
     : `${b.lines - b.matched} of ${b.lines} Vrbo payments (${eur(b.unmatched_net)}) not yet seen in the bank. ` +
       "Import a newer statement to check them.";
   $("bankcheck").className = `bankcheck ${b.matched === b.lines ? "ok" : "pending"}`;
+}
+
+const KIND_LABEL = { income: "Money in", cost: "Gîte costs", tax: "Tax", personal: "Personal (family holiday)", transfer: "Between the two accounts", drawings: "Drawn to the UK" };
+
+function renderCosts(c) {
+  const list = $("kinds");
+  list.replaceChildren();
+  $("review").replaceChildren();
+  $("review-wrap").hidden = true;
+  if (!c || c.totals.length === 0) {
+    list.append(el("li", { class: "empty" }, "No bank statements imported for this year."));
+    return;
+  }
+  for (const kind of ["income", "cost", "tax", "personal", "transfer", "drawings"]) {
+    const rows = c.totals.filter((t) => t.kind === kind);
+    if (!rows.length) continue;
+    const sum = rows.reduce((s, r) => s + r.cents, 0);
+    const details = el("details", { class: "kind" },
+      el("summary", {}, el("span", {}, KIND_LABEL[kind]), el("span", { class: "amt" }, eur(sum))));
+    const inner = el("ul", {});
+    for (const r of rows) {
+      inner.append(el("li", {}, el("span", {}, `${r.label} (${r.count})`), el("span", { class: "amt" }, eur(r.cents))));
+    }
+    details.append(inner);
+    list.append(el("li", {}, details));
+  }
+  if (c.review.length) {
+    $("review-wrap").hidden = false;
+    for (const r of c.review) {
+      $("review").append(el("li", {},
+        el("span", { class: "rv-date" }, fmtDate(r.date)),
+        el("span", { class: "amt" }, eur(r.amount)),
+        el("span", { class: "rv-desc" }, r.description),
+        el("span", { class: "rv-why" }, r.reason)));
+    }
+  }
 }
 
 $("money").addEventListener("toggle", () => { if ($("money").open) loadMoney(); });
