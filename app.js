@@ -9,7 +9,9 @@
 // in memory and never written to storage; every value from the server goes
 // into the page as text, never as HTML.
 
-import { addDays, bars, feedHealth, monthRange, shiftMonth, upcoming } from "./calendar.js";
+import {
+  addDays, bars, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, upcoming,
+} from "./calendar.js";
 
 const SUPABASE_URL = "https://wqncpiokoaqwhpcwtawd.supabase.co";
 const PUBLISHABLE_KEY = "sb_publishable_SWxWltcwoZF0SCcDfpTT0Q_ZNj2FSqR";
@@ -177,8 +179,12 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list", "past-list"]) $(id).replaceChildren();
+  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list", "past-list",
+    "enquiry-list", "direct-list", "gap-list"]) $(id).replaceChildren();
   $("guests-prompt").textContent = "";
+  $("pipeline-prompt").textContent = "";
+  $("reply-time").textContent = "";
+  $("pipeline").open = false;
   $("guests").open = false;
   guestData = null;
   $("bankcheck").textContent = "";
@@ -200,6 +206,7 @@ async function load() {
     await loadMonth();
     const { feeds } = await api("/feeds");
     renderFeeds(feeds);
+    await loadPipeline();
     await loadGuests();
   } catch (e) {
     say(e.message, "bad");
@@ -265,18 +272,21 @@ function renderMonth(r, data) {
       row.append(el("div", { class: cls, style: { gridColumn: `${d.day + 1}` } }));
     }
     for (const b of bars(data.stays.filter((s) => s.property === p.slug), r.from, r.to)) {
-      const kind = b.status === "blocked" ? "block" : "guest";
+      // A direct hold is dates promised, not a guest; a confirmed direct
+      // booking is a guest the owner took, and must also be blocked on Vrbo.
+      const kind = b.status === "blocked" ? "block"
+        : b.channel === "direct" ? (b.status === "tentative" ? "hold" : "direct") : "guest";
       const turn = turnovers.has(`${p.slug}|${b.checkin}`) && !b.clippedStart;
       const cls = ["bar", `bar-${kind}`, b.clippedStart ? "clip-start" : "", b.clippedEnd ? "clip-end" : "",
         turn ? "turn" : ""].join(" ");
       const n = Math.round((Date.parse(b.checkout) - Date.parse(b.checkin)) / 86_400_000);
-      const what = kind === "block" ? "Owner block" : "Guest stay";
+      const what = { block: "Owner block", hold: "Hold (direct, not confirmed)", direct: "Direct booking", guest: "Guest stay" }[kind];
       const text = `${what}: ${fmtDate(b.checkin)} → ${fmtDate(b.checkout)}, ${n} night${n === 1 ? "" : "s"}` +
         (turn ? ". Same-day turnover on arrival." : "");
       row.append(el("div", {
         class: cls, role: "cell", title: text, "aria-label": text,
         style: { gridColumn: `${b.start + 1} / span ${b.span}` },
-      }, b.span >= 3 ? el("span", {}, kind === "block" ? "Block" : `${n}n`) : null));
+      }, b.span >= 3 ? el("span", {}, kind === "block" ? "Block" : kind === "hold" ? "Hold" : `${n}n`) : null));
     }
     grid.append(row);
   }
@@ -312,6 +322,86 @@ function renderFeeds(feeds) {
       el("span", { class: "feed-state" }, label[h]),
       el("span", { class: "feed-when" }, `Last success ${ago(f.last_success_at)}`),
       f.last_error ? el("span", { class: "feed-error" }, f.last_error) : null));
+  }
+}
+
+// ---- enquiries, holds and gaps (O4) ----
+
+const SOURCE = { site: "the website", email: "email", phone: "phone", whatsapp: "WhatsApp", vrbo: "Vrbo message",
+  in_person: "in person", other: "—" };
+const ENQ_STATE = { new: "To answer", responded: "Waiting on guest", converted: "Booked", lost: "Lost", spam: "Spam" };
+const HOLD_STATE = { open: "Hold, no end date", lapsed: "Hold lapsed", soon: "Hold ends soon", ok: "Hold" };
+
+async function loadPipeline() {
+  try {
+    renderPipeline(await api("/pipeline"));
+  } catch (e) {
+    say(e.message, "bad");
+  }
+}
+
+function party(adults, children) {
+  if (!adults) return null;
+  return `${adults} adult${adults === 1 ? "" : "s"}${children ? `, ${children} child${children === 1 ? "" : "ren"}` : ""}`;
+}
+
+function renderPipeline(p) {
+  const sum = pipelineSummary(p, p.today);
+  $("pipeline-prompt").textContent = sum.text;
+  $("pipeline-prompt").className = `hint-inline ${sum.urgent ? "prompt" : ""}`;
+
+  // Average time to a first answer, over the enquiries that have one.
+  const answered = p.enquiries.filter((e) => e.responded_at);
+  $("reply-time").textContent = answered.length
+    ? `Average time to answer: ${Math.round(answered.reduce((s, e) => s + responseHours(e.received_at, e.responded_at, 0), 0) / answered.length)} h, over ${answered.length}.`
+    : "";
+
+  const now = Date.now();
+  const enq = $("enquiry-list");
+  enq.replaceChildren();
+  if (!p.enquiries.length) enq.append(el("li", { class: "empty" }, "No open enquiries, and none closed in the last 90 days."));
+  for (const e of p.enquiries) {
+    const when = e.checkin ? `${fmtDate(e.checkin)} → ${fmtDate(e.checkout)}` : "dates not given";
+    const wait = e.status === "new" ? `waiting ${responseHours(e.received_at, null, now)} h` :
+      e.responded_at ? `answered in ${responseHours(e.received_at, e.responded_at, 0)} h` : null;
+    enq.append(el("li", {},
+      el("div", { class: "g-head" },
+        el("span", { class: "g-name" }, e.guest ?? "Guest not recorded"),
+        el("span", { class: `state ${e.status}` }, ENQ_STATE[e.status] ?? e.status)),
+      el("div", { class: "g-when" }, `${when} · ${e.gite ?? "any gîte"}`),
+      el("div", { class: "g-meta" },
+        party(e.adults, e.children),
+        `via ${SOURCE[e.source] ?? e.source}`,
+        wait,
+        e.quoted_price ? `quoted €${Number(e.quoted_price).toLocaleString("en-GB", { minimumFractionDigits: 2 })}` : null,
+        e.lost_reason ? e.lost_reason : null)));
+  }
+
+  const dl = $("direct-list");
+  dl.replaceChildren();
+  if (!p.direct.length) dl.append(el("li", { class: "empty" }, "No direct bookings or holds."));
+  for (const d of p.direct) {
+    const hs = d.status === "tentative" ? holdState(d.hold_expires_on, p.today) : "confirmed";
+    const label = d.status === "tentative"
+      ? HOLD_STATE[hs] + (d.hold_expires_on ? ` until ${fmtDate(d.hold_expires_on)}` : "")
+      : "Confirmed";
+    dl.append(el("li", {},
+      el("div", { class: "g-head" },
+        el("span", { class: "g-name" }, d.guest ?? "Guest not recorded"),
+        el("span", { class: `state ${hs}` }, label)),
+      el("div", { class: "g-when" }, `${fmtDate(d.checkin)} → ${fmtDate(d.checkout)} · ${d.gite} · ${nights(d.checkin, d.checkout)} nights`),
+      el("div", { class: "g-meta" }, party(d.adults, d.children), el("span", { class: "g-ref" }, d.reservation))));
+  }
+
+  const gl = $("gap-list");
+  gl.replaceChildren();
+  if (!p.gaps.length) gl.append(el("li", { class: "empty" }, "No short gaps."));
+  for (const g of p.gaps) {
+    gl.append(el("li", {},
+      el("div", { class: "g-head" },
+        el("span", { class: "g-name" }, g.gite),
+        el("span", { class: "g-when" }, `${g.nights} night${g.nights === 1 ? "" : "s"}`)),
+      el("div", { class: "g-when" }, `${fmtDate(g.from)} → ${fmtDate(g.to)}`)));
   }
 }
 

@@ -6,7 +6,7 @@
 // must be clipped, not moved; and a same-day departure and arrival is one
 // turnover, not two lines.
 
-import { addDays, bars, feedHealth, monthRange, nights, shiftMonth, upcoming } from "../calendar.js";
+import { addDays, bars, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, upcoming } from "../calendar.js";
 
 let pass = 0, fail = 0;
 function eq(label, got, want) {
@@ -95,6 +95,26 @@ eq("feed: a day and a half without a success is stale",
 eq("feed: twenty hours is fine",
   feedHealth({ active: true, last_success_at: "2026-09-28T16:00:00Z", last_status: "not_modified" }, now), "ok");
 eq("feed: inactive", feedHealth({ active: false, last_success_at: null }, now), "inactive");
+
+// ---- enquiries, holds and gaps ----
+eq("hold: no expiry set", holdState(null, "2026-10-05"), "open");
+eq("hold: lapsed yesterday", holdState("2026-10-04", "2026-10-05"), "lapsed");
+eq("hold: the last day is not lapsed", holdState("2026-10-05", "2026-10-05"), "soon");
+eq("hold: three days to go", holdState("2026-10-08", "2026-10-05"), "soon");
+eq("hold: a week to go", holdState("2026-10-12", "2026-10-05"), "ok");
+eq("response: answered after 5 hours", responseHours("2026-10-05T09:00:00Z", "2026-10-05T14:00:00Z", 0), 5);
+eq("response: unanswered counts up to now", responseHours("2026-10-05T09:00:00Z", null, Date.parse("2026-10-06T09:00:00Z")), 24);
+{
+  const p = {
+    enquiries: [{ status: "new" }, { status: "responded" }, { status: "lost" }],
+    direct: [{ status: "tentative", hold_expires_on: "2026-10-01" }, { status: "confirmed", hold_expires_on: null }],
+    gaps: [{ nights: 3 }],
+  };
+  eq("summary: everything waiting", pipelineSummary(p, "2026-10-05"),
+    { text: "1 enquiry to answer · 1 waiting on the guest · 1 hold (1 lapsed) · 1 short gap", urgent: true });
+  eq("summary: nothing waiting", pipelineSummary({ enquiries: [{ status: "lost" }], direct: [], gaps: [] }, "2026-10-05"),
+    { text: "nothing waiting", urgent: false });
+}
 
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) Deno.exit(1);

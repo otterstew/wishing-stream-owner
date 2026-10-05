@@ -92,3 +92,37 @@ export function feedHealth(feed, now, maxDays = 1) {
   if (feed.last_status && !["ok", "not_modified"].includes(feed.last_status)) return "failing";
   return age > maxDays ? "stale" : "ok";
 }
+
+// ---- enquiries, holds and gaps (O4) ----
+
+// Where a hold stands on `today`. A hold is direct dates kept for a guest who
+// has not confirmed; nothing releases it automatically, so a lapsed one has
+// to be seen. "soon" is three days or less: time to chase the guest.
+export function holdState(expiresOn, today) {
+  if (!expiresOn) return "open";
+  if (expiresOn < today) return "lapsed";
+  return nights(today, expiresOn) <= 3 ? "soon" : "ok";
+}
+
+// Hours from an enquiry arriving to its first answer, or so far when it has
+// none. Time-to-response is the cheapest lever direct booking has.
+export function responseHours(receivedAt, respondedAt, now) {
+  const end = respondedAt ? Date.parse(respondedAt) : now;
+  return Math.max(0, Math.round((end - Date.parse(receivedAt)) / 3_600_000));
+}
+
+// The section heading: what is waiting on the owner, in a few words. Empty
+// parts are left out; nothing waiting says so.
+export function pipelineSummary(p, today) {
+  const unanswered = p.enquiries.filter((e) => e.status === "new").length;
+  const waiting = p.enquiries.filter((e) => e.status === "responded").length;
+  const holds = p.direct.filter((d) => d.status === "tentative");
+  const lapsed = holds.filter((h) => holdState(h.hold_expires_on, today) === "lapsed").length;
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const bits = [];
+  if (unanswered) bits.push(plural(unanswered, "enquiry to answer", "enquiries to answer"));
+  if (waiting) bits.push(plural(waiting, "waiting on the guest", "waiting on guests"));
+  if (holds.length) bits.push(plural(holds.length, "hold", "holds") + (lapsed ? ` (${lapsed} lapsed)` : ""));
+  if (p.gaps.length) bits.push(plural(p.gaps.length, "short gap", "short gaps"));
+  return { text: bits.join(" · ") || "nothing waiting", urgent: unanswered > 0 || lapsed > 0 };
+}

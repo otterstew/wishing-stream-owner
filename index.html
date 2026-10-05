@@ -83,8 +83,26 @@
           <li><span class="key key-guest"></span>Guest stay</li>
           <li><span class="key key-block"></span>Owner block</li>
           <li><span class="key key-turn"></span>Same-day turnover</li>
+          <li><span class="key key-hold"></span>Hold (direct, not confirmed)</li>
+          <li><span class="key key-direct"></span>Direct booking</li>
         </ul>
       </section>
+
+      <!-- Enquiries, holds and short gaps: what is waiting on the owner. Closed by
+           default (it names guests); the heading says what needs doing. -->
+      <details id="pipeline" class="card money">
+        <summary><h2>Enquiries &amp; holds</h2><span id="pipeline-prompt" class="hint-inline"></span></summary>
+        <h3 class="sub">Enquiries</h3>
+        <p id="reply-time" class="hint"></p>
+        <ul id="enquiry-list" class="guest-list"></ul>
+        <h3 class="sub">Direct bookings and holds</h3>
+        <p class="hint">Each must also be blocked on Vrbo, by its calendar import or by hand. A hold is not released on its own: confirm or cancel it.</p>
+        <ul id="direct-list" class="guest-list"></ul>
+        <h3 class="sub">Short gaps, next twelve months</h3>
+        <p class="hint">Up to six free nights between stays or before a block: hard to sell as they are. Offer them to a neighbouring guest, or lower the minimum stay.</p>
+        <ul id="gap-list" class="guest-list"></ul>
+        <p class="hint">To answer, quote, hold or confirm, ask Claude; this section only shows them.</p>
+      </details>
 
       <!-- Guests: closed by default like Money, but the heading always says how
            many upcoming guests still need an email, which Vrbo never gives. -->
@@ -122,7 +140,7 @@
           <p class="hint">Tell Claude what each of these is; your answer is final and the rules will not change it.</p>
           <ul id="review" class="review"></ul>
         </div>
-        <p class="hint">Only Vrbo payouts imported so far are counted. Direct bookings are not in these figures.</p>
+        <p class="hint">Counts the Vrbo payouts imported and the direct payments recorded, without the tourist tax collected on direct stays.</p>
       </details>
 
       <section class="card">
