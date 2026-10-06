@@ -6,7 +6,7 @@
 // must be clipped, not moved; and a same-day departure and arrival is one
 // turnover, not two lines.
 
-import { addDays, bars, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, upcoming } from "../calendar.js";
+import { addDays, bars, dueLabel, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, taskSummary, upcoming, whatsappLink } from "../calendar.js";
 
 let pass = 0, fail = 0;
 function eq(label, got, want) {
@@ -115,6 +115,20 @@ eq("response: unanswered counts up to now", responseHours("2026-10-05T09:00:00Z"
   eq("summary: nothing waiting", pipelineSummary({ enquiries: [{ status: "lost" }], direct: [], gaps: [] }, "2026-10-05"),
     { text: "nothing waiting", urgent: false });
 }
+
+// ---- stay tasks ----
+eq("due: overdue", dueLabel("2027-07-25", "2027-07-27"), "Overdue by 2 days");
+eq("due: one day overdue", dueLabel("2027-07-26", "2027-07-27"), "Overdue by 1 day");
+eq("due: today", dueLabel("2027-07-27", "2027-07-27"), "Today");
+eq("due: tomorrow", dueLabel("2027-07-28", "2027-07-27"), "Tomorrow");
+eq("due: within a fortnight", dueLabel("2027-08-03", "2027-07-27"), "In 7 days");
+eq("due: later shows the date", dueLabel("2027-09-03", "2027-07-27", (d) => `D${d}`), "D2027-09-03");
+eq("tasks: overdue and this week", taskSummary([{ due_on: "2027-07-20" }, { due_on: "2027-07-27" }, { due_on: "2027-08-02" }, { due_on: "2027-08-20" }], "2027-07-27"),
+  { text: "1 overdue · 2 due this week", urgent: true });
+eq("tasks: only later ones", taskSummary([{ due_on: "2027-08-20" }], "2027-07-27"), { text: "next in 24 days", urgent: false });
+eq("tasks: none", taskSummary([], "2027-07-27"), { text: "nothing due", urgent: false });
+eq("whatsapp: from E.164", whatsappLink("+33612345678"), "https://wa.me/33612345678");
+eq("whatsapp: not a number", whatsappLink("06 12"), null);
 
 console.log(`${pass} passed, ${fail} failed`);
 if (fail > 0) Deno.exit(1);

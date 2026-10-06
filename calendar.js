@@ -126,3 +126,32 @@ export function pipelineSummary(p, today) {
   if (p.gaps.length) bits.push(plural(p.gaps.length, "short gap", "short gaps"));
   return { text: bits.join(" · ") || "nothing waiting", urgent: unanswered > 0 || lapsed > 0 };
 }
+
+// ---- stay tasks (O5) ----
+
+// "Overdue by 2 days", "Today", "Tomorrow", "In 5 days", "Mon 3 Aug" beyond a
+// fortnight. Calendar days, so a task due today is never "overdue by 0".
+export function dueLabel(due, today, fmt) {
+  const n = nights(today, due);
+  if (n < 0) return `Overdue by ${-n} day${n === -1 ? "" : "s"}`;
+  if (n === 0) return "Today";
+  if (n === 1) return "Tomorrow";
+  if (n <= 14) return `In ${n} days`;
+  return fmt ? fmt(due) : due;
+}
+
+// The section heading: overdue and due-this-week counts, or that nothing is.
+export function taskSummary(tasks, today) {
+  const overdue = tasks.filter((t) => t.due_on < today).length;
+  const week = tasks.filter((t) => t.due_on >= today && nights(today, t.due_on) < 7).length;
+  const bits = [];
+  if (overdue) bits.push(`${overdue} overdue`);
+  if (week) bits.push(`${week} due this week`);
+  if (!bits.length) bits.push(tasks.length ? `next in ${nights(today, tasks[0].due_on)} days` : "nothing due");
+  return { text: bits.join(" · "), urgent: overdue > 0 };
+}
+
+// A WhatsApp link from an E.164 phone: wa.me wants the digits only.
+export function whatsappLink(phone) {
+  return /^\+[1-9]\d{6,14}$/.test(phone ?? "") ? `https://wa.me/${phone.slice(1)}` : null;
+}

@@ -10,7 +10,8 @@
 // into the page as text, never as HTML.
 
 import {
-  addDays, bars, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, upcoming,
+  addDays, bars, dueLabel, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth,
+  taskSummary, upcoming, whatsappLink,
 } from "./calendar.js";
 
 const SUPABASE_URL = "https://wqncpiokoaqwhpcwtawd.supabase.co";
@@ -180,7 +181,9 @@ async function api(path) {
 
 function clearData() {
   for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list", "past-list",
-    "enquiry-list", "direct-list", "gap-list"]) $(id).replaceChildren();
+    "enquiry-list", "direct-list", "gap-list", "task-list"]) $(id).replaceChildren();
+  $("todo-prompt").textContent = "";
+  $("todo").open = false;
   $("guests-prompt").textContent = "";
   $("pipeline-prompt").textContent = "";
   $("reply-time").textContent = "";
@@ -206,6 +209,7 @@ async function load() {
     await loadMonth();
     const { feeds } = await api("/feeds");
     renderFeeds(feeds);
+    await loadTasks();
     await loadPipeline();
     await loadGuests();
   } catch (e) {
@@ -322,6 +326,80 @@ function renderFeeds(feeds) {
       el("span", { class: "feed-state" }, label[h]),
       el("span", { class: "feed-when" }, `Last success ${ago(f.last_success_at)}`),
       f.last_error ? el("span", { class: "feed-error" }, f.last_error) : null));
+  }
+}
+
+// ---- to do (O5) ----
+
+async function loadTasks() {
+  try {
+    const t = await api("/tasks");
+    renderTasks(t.tasks, t.today);
+  } catch (e) {
+    say(e.message, "bad");
+  }
+}
+
+// Which contact a task needs: email for the welcome email and the review
+// request, the phone for the WhatsApps.
+const NEEDS = { welcome_email: "email", review_request: "email", welcome_message: "phone", goodbye_message: "phone",
+  notify_caretaker: null };
+
+function renderTasks(tasks, today) {
+  const sum = taskSummary(tasks, today);
+  $("todo-prompt").textContent = sum.text;
+  $("todo-prompt").className = `hint-inline ${sum.urgent ? "prompt" : ""}`;
+  const list = $("task-list");
+  list.replaceChildren();
+  if (!tasks.length) list.append(el("li", { class: "empty" }, "Nothing due in the next 30 days."));
+  for (const t of tasks) {
+    const g = t.guest;
+    const need = NEEDS[t.kind];
+    const actions = el("div", { class: "t-actions" });
+    if (need === "email" && g?.email) actions.append(el("a", { href: `mailto:${g.email}` }, g.email));
+    if (need === "phone" && g?.phone) {
+      const wa = whatsappLink(g.phone);
+      if (wa) actions.append(el("a", { href: wa, target: "_blank", rel: "noopener noreferrer" }, "WhatsApp"));
+      actions.append(el("a", { href: `tel:${g.phone}` }, g.phone));
+    }
+    if (need && !g?.[need]) actions.append(el("span", { class: "t-missing" }, `No ${need} on file — add it under Guests`));
+    const msg = el("span", { class: "g-msg", role: "status" });
+    for (const [status, label] of [["done", "Done"], ["skipped", "Skip"]]) {
+      const btn = el("button", { type: "button", class: status === "done" ? "" : "link" }, label);
+      btn.addEventListener("click", () => setTask(t.id, status, btn, msg));
+      actions.append(btn);
+    }
+    actions.append(msg);
+    const due = t.due_on < today ? "overdue" : t.due_on === today ? "today" : "";
+    list.append(el("li", {},
+      el("div", { class: "g-head" },
+        el("span", { class: "g-name" }, `${t.label} — ${g?.name ?? "guest not known yet"}`),
+        el("span", { class: `t-due ${due}` }, dueLabel(t.due_on, today, fmtDate))),
+      el("div", { class: "g-when" }, `${t.gite} · ${fmtDate(t.checkin)} → ${fmtDate(t.checkout)}` +
+        (t.channel === "direct" ? " · direct" : "")),
+      t.same_day_arrival && t.kind.startsWith("welcome")
+        ? el("div", { class: "t-flag" }, "Same-day turnover on arrival: the gîte is cleaned in hours") : null,
+      t.kind === "goodbye_message" ? el("div", { class: "g-meta" }, `Turnover after: ${t.turnover_by}`) : null,
+      actions));
+  }
+}
+
+async function setTask(id, status, btn, msg) {
+  btn.disabled = true;
+  msg.textContent = "Saving…";
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${OWNER_API}/tasks/${id}`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${session.access_token}`, "content-type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    const r = await res.json().catch(() => ({}));
+    if (!res.ok) { msg.textContent = r.error ?? `Not saved (${res.status}).`; btn.disabled = false; return; }
+    await loadTasks();
+  } catch (e) {
+    msg.textContent = e.message;
+    btn.disabled = false;
   }
 }
 
