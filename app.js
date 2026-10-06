@@ -364,6 +364,12 @@ function renderTasks(tasks, today) {
     }
     if (need && !g?.[need]) actions.append(el("span", { class: "t-missing" }, `No ${need} on file — add it under Guests`));
     const msg = el("span", { class: "g-msg", role: "status" });
+    const draftBox = el("div", { class: "t-draft", hidden: "" });
+    if (need) {
+      const btn = el("button", { type: "button", class: "link" }, "Draft");
+      btn.addEventListener("click", () => showDraft(t, g, draftBox, btn));
+      actions.append(btn);
+    }
     for (const [status, label] of [["done", "Done"], ["skipped", "Skip"]]) {
       const btn = el("button", { type: "button", class: status === "done" ? "" : "link" }, label);
       btn.addEventListener("click", () => setTask(t.id, status, btn, msg));
@@ -380,8 +386,42 @@ function renderTasks(tasks, today) {
       t.same_day_arrival && t.kind.startsWith("welcome")
         ? el("div", { class: "t-flag" }, "Same-day turnover on arrival: the gîte is cleaned in hours") : null,
       t.kind === "goodbye_message" ? el("div", { class: "g-meta" }, `Turnover after: ${t.turnover_by}`) : null,
-      actions));
+      actions, draftBox));
   }
+}
+
+// The message, drafted in the owner's wording, to read, edit and send from
+// his own email or WhatsApp. The email link carries the draft into his mail
+// app; nothing is sent from the page. Gaps such as the welcome pack password
+// are marked in [brackets] for him to fill.
+async function showDraft(t, g, box, btn) {
+  if (!box.hidden) { box.hidden = true; return; }
+  btn.disabled = true;
+  try {
+    const d = await api(`/tasks/${t.id}/draft`);
+    const text = el("textarea", { rows: String(Math.min(16, d.body.split("\n").length + 2)), "aria-label": "Draft message" });
+    text.value = d.body;
+    const copy = el("button", { type: "button" }, "Copy");
+    copy.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(text.value);
+      copy.textContent = "Copied";
+    });
+    const bits = [d.subject ? el("div", { class: "g-meta" }, `Subject: ${d.subject}`) : null, text, el("div", { class: "t-actions" }, copy)];
+    if (d.channel === "email" && g?.email) {
+      const href = `mailto:${g.email}?subject=${encodeURIComponent(d.subject ?? "")}&body=${encodeURIComponent(text.value)}`;
+      const open = el("a", { href }, "Open in mail");
+      text.addEventListener("input", () => {
+        open.href = `mailto:${g.email}?subject=${encodeURIComponent(d.subject ?? "")}&body=${encodeURIComponent(text.value)}`;
+      });
+      bits[2].append(open);
+    }
+    if (text.value.includes("[")) bits.push(el("div", { class: "t-missing" }, "Fill in the [bracketed] gaps before sending."));
+    box.replaceChildren(...bits.filter(Boolean));
+  } catch (e) {
+    box.replaceChildren(el("div", { class: "t-missing" }, e.message));
+  }
+  box.hidden = false;
+  btn.disabled = false;
 }
 
 async function setTask(id, status, btn, msg) {
