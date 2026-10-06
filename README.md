@@ -27,6 +27,7 @@ accounts to create; sign-ups are off in the project.
 | `calendar.js` | Pure date arithmetic: month grids, clipping, turnovers, feed health |
 | `tests/calendar_test.js` | `deno run --no-config tests/calendar_test.js` |
 | `CNAME` | The custom domain for GitHub Pages |
+| `manifest.webmanifest`, `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` | Lets the page install as its own phone app (Android: Chrome › Install; iPhone: Safari › Add to Home Screen). The CSP allows `manifest-src 'self'` for it. |
 
 The Supabase client is loaded from jsdelivr at a pinned version with a
 subresource-integrity hash. Upgrading it means changing both the version and
