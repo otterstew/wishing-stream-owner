@@ -267,3 +267,6 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .t-missing { color: var(--warn); font-size: 0.85rem; }
 .t-draft { margin-top: 0.5rem; }
 .t-draft textarea { width: 100%; font: inherit; font-size: 0.9rem; padding: 0.5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); }
+.kept-total { font-weight: 600; border-top: 1px solid var(--line); }
+.owed .amt { color: var(--warn); }
+#kept > li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; }

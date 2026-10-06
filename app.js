@@ -180,7 +180,7 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "review", "guest-list", "past-list",
+  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "kept", "review", "guest-list", "past-list",
     "enquiry-list", "direct-list", "gap-list", "task-list"]) $(id).replaceChildren();
   $("todo-prompt").textContent = "";
   $("todo").open = false;
@@ -673,12 +673,39 @@ function renderMoney(m) {
       el("span", { class: "gite-sum" }, `${eur(p.gross)} gross · ${eur(p.net)} net`)));
   }
   renderCosts(m.costs);
+  renderKept(m.kept);
   const b = m.bank;
   $("bankcheck").textContent = b.lines === 0 ? "" : b.matched === b.lines
     ? `✓ All ${b.lines} Vrbo payments this year have been seen arriving in the bank.`
     : `${b.lines - b.matched} of ${b.lines} Vrbo payments (${eur(b.unmatched_net)}) not yet seen in the bank. ` +
       "Import a newer statement to check them.";
   $("bankcheck").className = `bankcheck ${b.matched === b.lines ? "ok" : "pending"}`;
+}
+
+// Earned, spent, taxed, kept; then drawn to the UK and still held in France.
+// Tax owed but not yet paid is shown beside kept, not taken off it: the money
+// is still in the account until the debit. Jersey tax stays in pounds.
+function renderKept(k) {
+  const list = $("kept");
+  list.replaceChildren();
+  if (!k || (k.income === 0 && k.costs === 0)) {
+    list.append(el("li", { class: "empty" }, "Nothing to show until the year's bank statements are in."));
+    return;
+  }
+  const row = (label, cents, cls = "") =>
+    el("li", { class: cls }, el("span", {}, label), el("span", { class: "amt" }, eur(cents)));
+  list.append(
+    row("Money in", k.income),
+    row("Gîte costs", -k.costs),
+    row("French tax paid", -k.taxPaid),
+    row("Kept", k.kept, "kept-total"),
+    row("of which drawn to the UK", -k.drawn),
+    row("still held in France", k.held));
+  if (k.owedUnpaid) list.append(row("French tax owed, not yet paid", -k.owedUnpaid, "owed"));
+  if (k.jerseyGbp) {
+    list.append(el("li", {}, el("span", {}, "Jersey income tax, the gîtes' share"),
+      el("span", { class: "amt" }, `−£${Math.floor(k.jerseyGbp / 100).toLocaleString("en-GB")}.${String(k.jerseyGbp % 100).padStart(2, "0")}`)));
+  }
 }
 
 const KIND_LABEL = { income: "Money in", cost: "Gîte costs", tax: "Tax", personal: "Personal (family holiday)", transfer: "Between the two accounts", drawings: "Drawn to the UK" };
