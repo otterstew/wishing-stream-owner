@@ -1,35 +1,35 @@
 :root {
-  --bg: #f6f4ef;
+  --bg: #FAF9F7;
   --card: #ffffff;
-  --ink: #1f2a2a;
-  --muted: #5f6b6a;
-  --line: #e2ded4;
-  --weekend: #f3f0e8;
-  --accent: #1f6f66;
-  --guest: #2f7d73;
+  --ink: #111315;
+  --muted: #6B6D70;
+  --line: #E7E3DC;
+  --weekend: #F3F1EC;
+  --accent: #304A2F;
+  --guest: #3E5E3C;
   --guest-ink: #ffffff;
-  --block: #b9b4a8;
-  --turn: #d98e1f;
-  --today: #c2412d;
+  --block: #C9C4BB;
+  --turn: #C98A3A;
+  --today: #E04848;
   --bad: #b3261e;
   --warn: #9a6400;
-  --good: #2f7d4f;
+  --good: #2F6B45;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121716;
-    --card: #1b2221;
-    --ink: #e7ecea;
-    --muted: #9aa7a4;
-    --line: #2d3735;
-    --weekend: #212a28;
-    --accent: #6cc3b6;
-    --guest: #3f9a8e;
-    --guest-ink: #0d1413;
-    --block: #56605d;
+    --bg: #0D0F11;
+    --card: #16181B;
+    --ink: #F2F1EE;
+    --muted: #A6A8AC;
+    --line: #2A2D31;
+    --weekend: #1C1F22;
+    --accent: #A9C8A6;
+    --guest: #5E8A5C;
+    --guest-ink: #0D0F11;
+    --block: #4A4D52;
     --turn: #f0a93a;
-    --today: #ff7a63;
+    --today: #ED5454;
     --bad: #ff8a80;
     --warn: #f2c14e;
     --good: #7fd69c;
@@ -37,9 +37,9 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #121716; --card: #1b2221; --ink: #e7ecea; --muted: #9aa7a4; --line: #2d3735;
-  --weekend: #212a28; --accent: #6cc3b6; --guest: #3f9a8e; --guest-ink: #0d1413;
-  --block: #56605d; --turn: #f0a93a; --today: #ff7a63; --bad: #ff8a80; --warn: #f2c14e;
+  --bg: #0D0F11; --card: #16181B; --ink: #F2F1EE; --muted: #A6A8AC; --line: #2A2D31;
+  --weekend: #1C1F22; --accent: #A9C8A6; --guest: #5E8A5C; --guest-ink: #0D0F11;
+  --block: #4A4D52; --turn: #f0a93a; --today: #ED5454; --bad: #ff8a80; --warn: #f2c14e;
   --good: #7fd69c; color-scheme: dark;
 }
 
@@ -272,3 +272,4 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .kept-total { font-weight: 600; border-top: 1px solid var(--line); }
 .owed .amt { color: var(--warn); }
 #kept > li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; }
+.h1-tag { font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-left: 0.4em; vertical-align: 0.15em; }
