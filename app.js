@@ -744,7 +744,58 @@ function renderCosts(c) {
   }
 }
 
-$("money").addEventListener("toggle", () => { if ($("money").open) loadMoney(); });
+// Every year, newest first: gross, Vrbo's fees and net, opening to each gîte.
+// In euros. Vrbo paid in pounds until 2019; those years are converted at the
+// owner's flat rate, and the year says how many pounds that was.
+const CUR = { EUR: "€", GBP: "£" };
+const amount = (cents, cur = "EUR") => {
+  const sign = cents < 0 ? "−" : "";
+  const a = Math.abs(cents);
+  return `${sign}${CUR[cur] ?? `${cur} `}${Math.floor(a / 100).toLocaleString("en-GB")}`;
+};
+
+async function loadYears() {
+  try {
+    renderYears(await api("/history"));
+  } catch (e) {
+    say(e.message, "bad");
+  }
+}
+
+function renderYears(h) {
+  const list = $("years");
+  list.replaceChildren();
+  if (!h.years.length) {
+    list.append(el("li", { class: "empty" }, "No payouts imported yet."));
+    return;
+  }
+  const thisYear = Number(h.today.slice(0, 4));
+  for (const y of h.years) {
+    const label = `${y.year}${y.year === thisYear ? " (so far)" : ""}${y.converted.length ? " *" : ""}`;
+    const details = el("details", { class: "kind" },
+      el("summary", {}, el("span", {}, label),
+        el("span", { class: "amt" }, `${amount(y.gross)} gross · ${amount(y.net)} net`)));
+    const inner = el("ul", {});
+    for (const p of h.properties) {
+      const a = y.properties[p.slug];
+      if (!a) continue;
+      inner.append(el("li", {}, el("span", {}, p.name), el("span", { class: "amt" }, amount(a.gross))));
+    }
+    inner.append(el("li", {}, el("span", {}, "Vrbo's fees"), el("span", { class: "amt" }, amount(-y.deductions))));
+    for (const c of y.converted) {
+      inner.append(el("li", {}, el("span", {}, `* includes ${amount(c.gross, c.currency)} gross paid in pounds, at ${c.currency} 1 = €${c.rate}`)));
+    }
+    details.append(inner);
+    list.append(el("li", {}, details));
+  }
+  // A currency with no agreed rate is shown as it was paid, never guessed.
+  for (const y of h.unconverted ?? []) {
+    list.append(el("li", {}, el("span", {}, `${y.year}, paid in ${y.currency}: `),
+      el("span", { class: "amt" }, `${amount(y.gross, y.currency)} gross · ${amount(y.net, y.currency)} net`)));
+  }
+}
+
+$("money").addEventListener("toggle", () => { if ($("money").open) { loadYears(); loadMoney(); } });
 $("money-prev").addEventListener("click", () => { moneyYear -= 1; loadMoney(); });
 $("money-next").addEventListener("click", () => { moneyYear += 1; loadMoney(); });
 
