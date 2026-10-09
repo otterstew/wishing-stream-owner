@@ -482,6 +482,32 @@ function renderPipeline(p) {
     const when = e.checkin ? `${fmtDate(e.checkin)} → ${fmtDate(e.checkout)}` : "dates not given";
     const wait = e.status === "new" ? `waiting ${responseHours(e.received_at, null, now)} h` :
       e.responded_at ? `answered in ${responseHours(e.received_at, e.responded_at, 0)} h` : null;
+    // Open enquiries get their reply drafted here and are moved on with one
+    // tap. A Vrbo message is answered on Vrbo, so it gets no draft.
+    const open = e.status === "new" || e.status === "responded";
+    const actions = el("div", { class: "t-actions" });
+    const msg = el("span", { class: "g-msg", role: "status" });
+    const box = el("div", { class: "t-draft", hidden: "" });
+    let quoted = null;
+    if (open && e.source !== "vrbo") {
+      const btn = el("button", { type: "button", class: "link" }, "Draft reply");
+      btn.addEventListener("click", () => showDraftAt(`/enquiries/${e.id}/draft`, box, btn, (d) => { quoted = d.quotedPrice; }));
+      actions.append(btn);
+    }
+    if (e.status === "new") {
+      const btn = el("button", { type: "button" }, "Answered");
+      btn.addEventListener("click", () => moveEnquiry(e.id, { status: "responded", quoted_price: quoted ?? undefined }, btn, msg));
+      actions.append(btn);
+    }
+    if (open) {
+      const btn = el("button", { type: "button", class: "link" }, "Lost");
+      btn.addEventListener("click", () => {
+        const why = prompt("Why was it lost? (optional)") ?? "";
+        moveEnquiry(e.id, { status: "lost", lost_reason: why }, btn, msg);
+      });
+      actions.append(btn);
+    }
+    if (actions.childElementCount) actions.append(msg);
     enq.append(el("li", {},
       el("div", { class: "g-head" },
         el("span", { class: "g-name" }, e.guest ?? "Guest not recorded"),
@@ -492,7 +518,8 @@ function renderPipeline(p) {
         `via ${SOURCE[e.source] ?? e.source}`,
         wait,
         e.quoted_price ? `quoted €${Number(e.quoted_price).toLocaleString("en-GB", { minimumFractionDigits: 2 })}` : null,
-        e.lost_reason ? e.lost_reason : null)));
+        e.lost_reason ? e.lost_reason : null),
+      actions.childElementCount ? actions : null, box));
   }
 
   const dl = $("direct-list");
@@ -503,12 +530,21 @@ function renderPipeline(p) {
     const label = d.status === "tentative"
       ? HOLD_STATE[hs] + (d.hold_expires_on ? ` until ${fmtDate(d.hold_expires_on)}` : "")
       : "Confirmed";
+    // A confirmed booking gets its thank-you and rental contract drafted here.
+    let actions = null, box = null;
+    if (d.status === "confirmed") {
+      box = el("div", { class: "t-draft", hidden: "" });
+      const btn = el("button", { type: "button", class: "link" }, "Draft confirmation and contract");
+      btn.addEventListener("click", () => showDraftAt(`/direct/${d.id}/draft`, box, btn));
+      actions = el("div", { class: "t-actions" }, btn);
+    }
     dl.append(el("li", {},
       el("div", { class: "g-head" },
         el("span", { class: "g-name" }, d.guest ?? "Guest not recorded"),
         el("span", { class: `state ${hs}` }, label)),
       el("div", { class: "g-when" }, `${fmtDate(d.checkin)} → ${fmtDate(d.checkout)} · ${d.gite} · ${nights(d.checkin, d.checkout)} nights`),
-      el("div", { class: "g-meta" }, party(d.adults, d.children), el("span", { class: "g-ref" }, d.reservation))));
+      el("div", { class: "g-meta" }, party(d.adults, d.children), el("span", { class: "g-ref" }, d.reservation)),
+      actions, box));
   }
 
   const gl = $("gap-list");
@@ -520,6 +556,59 @@ function renderPipeline(p) {
         el("span", { class: "g-name" }, g.gite),
         el("span", { class: "g-when" }, `${g.nights} night${g.nights === 1 ? "" : "s"}`)),
       el("div", { class: "g-when" }, `${fmtDate(g.from)} → ${fmtDate(g.to)}`)));
+  }
+}
+
+// A draft from the server (an enquiry reply, a booking confirmation), shown
+// to read, edit, copy, or carry into the mail app with "Open in mail".
+// Nothing is sent from the page.
+async function showDraftAt(path, box, btn, then) {
+  if (!box.hidden) { box.hidden = true; return; }
+  btn.disabled = true;
+  try {
+    const d = await api(path);
+    const text = el("textarea", { rows: String(Math.min(18, d.body.split("\n").length + 2)), "aria-label": "Draft message" });
+    text.value = d.body;
+    const copy = el("button", { type: "button" }, "Copy");
+    copy.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(text.value);
+      copy.textContent = "Copied";
+    });
+    const row = el("div", { class: "t-actions" }, copy);
+    if (d.email) {
+      const href = () => `mailto:${d.email}?subject=${encodeURIComponent(d.subject ?? "")}&body=${encodeURIComponent(text.value)}`;
+      const open = el("a", { href: href() }, "Open in mail");
+      text.addEventListener("input", () => { open.href = href(); });
+      row.append(open);
+    } else {
+      row.append(el("span", { class: "t-missing" }, "No email on file: copy it into WhatsApp or add the email under Guests."));
+    }
+    box.replaceChildren(...[d.subject ? el("div", { class: "g-meta" }, `Subject: ${d.subject}`) : null, text, row,
+      d.note ? el("div", { class: "g-meta" }, d.note) : null].filter(Boolean));
+    if (then) then(d);
+  } catch (e) {
+    box.replaceChildren(el("div", { class: "t-missing" }, e.message));
+  }
+  box.hidden = false;
+  btn.disabled = false;
+}
+
+async function moveEnquiry(id, body, btn, msg) {
+  btn.disabled = true;
+  msg.textContent = "Saving…";
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${OWNER_API}/enquiries/${id}`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${session.access_token}`, "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const r = await res.json().catch(() => ({}));
+    if (!res.ok) { msg.textContent = r.error ?? `Not saved (${res.status}).`; btn.disabled = false; return; }
+    await loadPipeline();
+  } catch (e) {
+    msg.textContent = e.message;
+    btn.disabled = false;
   }
 }
 
