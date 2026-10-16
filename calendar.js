@@ -123,8 +123,25 @@ export function pipelineSummary(p, today) {
   if (unanswered) bits.push(plural(unanswered, "enquiry to answer", "enquiries to answer"));
   if (waiting) bits.push(plural(waiting, "waiting on the guest", "waiting on guests"));
   if (holds.length) bits.push(plural(holds.length, "hold", "holds") + (lapsed ? ` (${lapsed} lapsed)` : ""));
-  if (p.gaps.length) bits.push(plural(p.gaps.length, "short gap", "short gaps"));
+  const toOpen = p.gaps.filter((g) => g.vrbo?.kind === "lower" && !g.vrbo_done_at).length;
+  if (p.gaps.length) bits.push(plural(p.gaps.length, "short gap", "short gaps") + (toOpen ? ` (${toOpen} to open on Vrbo)` : ""));
   return { text: bits.join(" · ") || "nothing waiting", urgent: unanswered > 0 || lapsed > 0 };
+}
+
+// What one short gap needs on Vrbo, in a line (owner, 16 Oct 2026). The site
+// already sells a short gap whole; Vrbo only does once its minimum for that
+// arrival day is lowered by hand. `action` says which button goes with it.
+export function gapVrboLine(g, fmt) {
+  const v = g.vrbo ?? { kind: "fine" };
+  if (v.kind === "too_short") return { text: "Under 3 nights: too short to sell, on the site or on Vrbo.", action: null };
+  if (v.kind === "fine") return { text: "Vrbo can already sell these nights as one stay.", action: null };
+  if (g.vrbo_done_at) {
+    return { text: `Vrbo minimum lowered to ${v.to_min} nights for arrivals on ${fmt(v.arrival)} (ticked ${fmt(g.vrbo_done_at.slice(0, 10))}).`, action: "undo" };
+  }
+  return {
+    text: `On Vrbo, lower the minimum stay for arrivals on ${fmt(v.arrival)} from ${v.from_min} to ${v.to_min} nights. The website already sells them.`,
+    action: "done",
+  };
 }
 
 // ---- stay tasks (O5) ----

@@ -6,7 +6,8 @@
 // must be clipped, not moved; and a same-day departure and arrival is one
 // turnover, not two lines.
 
-import { addDays, bars, dueLabel, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, taskSummary, upcoming, whatsappLink } from "../calendar.js";
+import {
+  addDays, bars, dueLabel, feedHealth, gapVrboLine, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth, taskSummary, upcoming, whatsappLink } from "../calendar.js";
 
 let pass = 0, fail = 0;
 function eq(label, got, want) {
@@ -112,8 +113,26 @@ eq("response: unanswered counts up to now", responseHours("2026-10-05T09:00:00Z"
   };
   eq("summary: everything waiting", pipelineSummary(p, "2026-10-05"),
     { text: "1 enquiry to answer · 1 waiting on the guest · 1 hold (1 lapsed) · 1 short gap", urgent: true });
+  const lower = { kind: "lower", arrival: "2027-07-31", from_min: 7, to_min: 3 };
+  eq("summary: gaps to open on Vrbo", pipelineSummary({ enquiries: [], direct: [], gaps: [
+    { nights: 3, vrbo: lower }, { nights: 3, vrbo: lower, vrbo_done_at: "2026-10-16T10:00:00Z" }, { nights: 5, vrbo: { kind: "fine" } },
+  ] }, "2026-10-05"), { text: "3 short gaps (1 to open on Vrbo)", urgent: false });
   eq("summary: nothing waiting", pipelineSummary({ enquiries: [{ status: "lost" }], direct: [], gaps: [] }, "2026-10-05"),
     { text: "nothing waiting", urgent: false });
+}
+
+// ---- what a short gap needs on Vrbo ----
+{
+  const fmt = (d) => d;
+  const lower = { kind: "lower", arrival: "2027-07-31", from_min: 7, to_min: 3 };
+  eq("gap: lower Vrbo's minimum", gapVrboLine({ vrbo: lower }, fmt), {
+    text: "On Vrbo, lower the minimum stay for arrivals on 2027-07-31 from 7 to 3 nights. The website already sells them.",
+    action: "done" });
+  eq("gap: already ticked", gapVrboLine({ vrbo: lower, vrbo_done_at: "2026-10-16T10:00:00Z" }, fmt), {
+    text: "Vrbo minimum lowered to 3 nights for arrivals on 2027-07-31 (ticked 2026-10-16).", action: "undo" });
+  eq("gap: Vrbo can sell it", gapVrboLine({ vrbo: { kind: "fine" } }, fmt).action, null);
+  eq("gap: too short", gapVrboLine({ vrbo: { kind: "too_short" } }, fmt).text,
+    "Under 3 nights: too short to sell, on the site or on Vrbo.");
 }
 
 // ---- stay tasks ----

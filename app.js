@@ -10,7 +10,7 @@
 // into the page as text, never as HTML.
 
 import {
-  addDays, bars, dueLabel, feedHealth, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth,
+  addDays, bars, dueLabel, feedHealth, gapVrboLine, holdState, monthRange, nights, pipelineSummary, responseHours, shiftMonth,
   taskSummary, upcoming, whatsappLink,
 } from "./calendar.js";
 
@@ -551,11 +551,23 @@ function renderPipeline(p) {
   gl.replaceChildren();
   if (!p.gaps.length) gl.append(el("li", { class: "empty" }, "No short gaps."));
   for (const g of p.gaps) {
+    // What the gap needs on Vrbo, and the one tick that goes with it.
+    const line = gapVrboLine(g, fmtDate);
+    let actions = null;
+    if (line.action) {
+      const msg = el("span", { class: "g-meta" });
+      const btn = el("button", { type: "button", class: line.action === "done" ? "" : "link" },
+        line.action === "done" ? "Done on Vrbo" : "Undo");
+      btn.addEventListener("click", () => tickGapVrbo(g, line.action === "done", btn, msg));
+      actions = el("div", { class: "t-actions" }, btn, msg);
+    }
     gl.append(el("li", {},
       el("div", { class: "g-head" },
         el("span", { class: "g-name" }, g.gite),
         el("span", { class: "g-when" }, `${g.nights} night${g.nights === 1 ? "" : "s"}`)),
-      el("div", { class: "g-when" }, `${fmtDate(g.from)} → ${fmtDate(g.to)}`)));
+      el("div", { class: "g-when" }, `${fmtDate(g.from)} → ${fmtDate(g.to)}`),
+      el("div", { class: line.action === "done" ? "g-meta t-missing" : "g-meta" }, line.text),
+      actions));
   }
 }
 
@@ -591,6 +603,27 @@ async function showDraftAt(path, box, btn, then) {
   }
   box.hidden = false;
   btn.disabled = false;
+}
+
+// "Done on Vrbo" (or Undo) for one short gap. Only the tick is stored; the
+// change itself is made on Vrbo by hand.
+async function tickGapVrbo(g, done, btn, msg) {
+  btn.disabled = true;
+  msg.textContent = "Saving…";
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${OWNER_API}/gaps/vrbo`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${session.access_token}`, "content-type": "application/json" },
+      body: JSON.stringify({ property: g.property, from: g.from, to: g.to, min_nights: g.vrbo?.to_min, done }),
+    });
+    const r = await res.json().catch(() => ({}));
+    if (!res.ok) { msg.textContent = r.error ?? `Not saved (${res.status}).`; btn.disabled = false; return; }
+    await loadPipeline();
+  } catch (e) {
+    msg.textContent = e.message;
+    btn.disabled = false;
+  }
 }
 
 async function moveEnquiry(id, body, btn, msg) {
