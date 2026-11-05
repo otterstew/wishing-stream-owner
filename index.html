@@ -1,22 +1,26 @@
 <!doctype html>
-<html lang="en-GB">
+<html lang="en-GB" data-hue="blossom">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <!--
-    Only this page's own files, the pinned Supabase client from jsdelivr, and
-    the project's own API. data: images are the authenticator QR code, which
+    Only this page's own files, the pinned Supabase client from jsdelivr, the
+    project's own API, and the Otter fonts (Google Fonts for Cormorant Garamond,
+    jsdelivr for iA Writer). data: images are the authenticator QR code, which
     Supabase returns as an SVG data URL.
   -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src https://wqncpiokoaqwhpcwtawd.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' data:; connect-src https://wqncpiokoaqwhpcwtawd.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'none'">
   <title>WS Owner · Wishing Stream</title>
   <meta name="apple-mobile-web-app-title" content="WS Owner">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <meta name="theme-color" content="#111315">
+  <meta name="theme-color" content="#EDEBE7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1C1B19" media="(prefers-color-scheme: dark)">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>

@@ -1,55 +1,381 @@
-:root {
-  --bg: #FAF9F7;
-  --card: #ffffff;
-  --ink: #111315;
-  --muted: #6B6D70;
-  --line: #E7E3DC;
-  --weekend: #F3F1EC;
-  --accent: #304A2F;
-  --guest: #3E5E3C;
-  --guest-ink: #ffffff;
-  --block: #C9C4BB;
-  --turn: #C98A3A;
-  --today: #E04848;
-  --bad: #b3261e;
-  --warn: #9a6400;
-  --good: #2F6B45;
-  color-scheme: light;
+/* otter:start v2.1 — Otter design language. Source: ~/.claude/skills/otter-design/otter.css
+   Paste this block whole into an app's <style>. Re-sync by replacing everything
+   between otter:start and otter:end. App-specific CSS goes after otter:end.
+   Also needed in <head>:
+   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+   App colour: <html lang="en-GB" data-hue="heather|sea|teal|moss|ochre|blossom">  */
+
+/* ── Typewriter faces: iA Writer Quattro (words) and Mono (numbers). SIL OFL, pinned. ── */
+@font-face{font-family:"iA Quattro";font-weight:400;font-style:normal;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Quattro/Webfonts/iAWriterQuattroS-Regular.woff2") format("woff2")}
+@font-face{font-family:"iA Quattro";font-weight:400;font-style:italic;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Quattro/Webfonts/iAWriterQuattroS-Italic.woff2") format("woff2")}
+@font-face{font-family:"iA Quattro";font-weight:700;font-style:normal;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Quattro/Webfonts/iAWriterQuattroS-Bold.woff2") format("woff2")}
+@font-face{font-family:"iA Quattro";font-weight:700;font-style:italic;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Quattro/Webfonts/iAWriterQuattroS-BoldItalic.woff2") format("woff2")}
+@font-face{font-family:"iA Mono";font-weight:400;font-style:normal;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Mono/Webfonts/iAWriterMonoS-Regular.woff2") format("woff2")}
+@font-face{font-family:"iA Mono";font-weight:700;font-style:normal;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Mono/Webfonts/iAWriterMonoS-Bold.woff2") format("woff2")}
+
+:root{
+  /* ── Earthy hues: one per app, used as a light touch ── */
+  --heather:#7A5C8E; --sea:#3E6E8E; --teal:#3F7A7B; --moss:#5E7A4A; --ochre:#A8741C; --blossom:#B0566F;
+
+  /* ── Signals (same in every app) ── */
+  --ok:#5E7A4A; --warn:#A8741C; --fail:#A8473A;
+
+  /* ── Type: typewriter for words, a quiet serif for feeling, mono for figures ── */
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --type:"iA Quattro",ui-monospace,"SF Mono",Menlo,monospace;
+  --mono:"iA Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --t-xs:.75rem; --t-sm:.8125rem; --t-md:1rem; --t-lg:1.0625rem;
+  --t-xl:1.625rem; --t-2xl:2.25rem; --t-3xl:3rem; --t-4xl:4.5rem;
+
+  /* ── Space (4px steps) and shape ── */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:72px;
+  --r-xs:4px; --r-sm:8px; --r-md:12px; --r-lg:18px;
+  --ease:cubic-bezier(.2,.7,.3,1);
+
+  --accent:var(--heather);
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0D0F11;
-    --card: #16181B;
-    --ink: #F2F1EE;
-    --muted: #A6A8AC;
-    --line: #2A2D31;
-    --weekend: #1C1F22;
-    --accent: #A9C8A6;
-    --guest: #5E8A5C;
-    --guest-ink: #0D0F11;
-    --block: #4A4D52;
-    --turn: #f0a93a;
-    --today: #ED5454;
-    --bad: #ff8a80;
-    --warn: #f2c14e;
-    --good: #7fd69c;
-    color-scheme: dark;
+[data-hue="heather"]{--accent:var(--heather)}
+[data-hue="sea"]    {--accent:var(--sea)}
+[data-hue="teal"]   {--accent:var(--teal)}
+[data-hue="moss"]   {--accent:var(--moss)}
+[data-hue="ochre"]  {--accent:var(--ochre)}
+[data-hue="blossom"]{--accent:var(--blossom)}
+
+/* ── Light: Kim Klassen's greige and charcoal. Roles live on every [data-hue] too. ── */
+:root,[data-hue]{
+  --ground:#EDEBE7;   /* the page */
+  --paper:#F6F5F2;    /* the note, rows, panels */
+  --stone:#E1DFD8;    /* fields, chips, tracks */
+  --stone-2:#CAC4BE;  /* rules, faded marks */
+  --taupe:#908077;    /* the ticker */
+  --ink:#3D3D39; --ink-2:#6B6A64; --ink-3:#9C9A93; --ink-dim:#B9B6AE;
+  --on-ink:#F6F5F2;
+  --accent-tint:color-mix(in oklab,var(--accent),var(--paper) 86%);
+  --accent-deep:color-mix(in oklab,var(--accent),black 18%);
+  --ok-tint:color-mix(in oklab,var(--ok),var(--paper) 84%);
+  --warn-tint:color-mix(in oklab,var(--warn),var(--paper) 84%);
+  --fail-tint:color-mix(in oklab,var(--fail),var(--paper) 86%);
+  color-scheme:light;
+}
+/* ── Dark: warm charcoal, not blue-black ── */
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]),:root:not([data-theme="light"]) [data-hue]{
+    --ground:#1C1B19; --paper:#252421; --stone:#302E2B; --stone-2:#4A4743; --taupe:#5E544D;
+    --ink:#E8E5DF; --ink-2:#B3AFA7; --ink-3:#85827B; --ink-dim:#5C5954; --on-ink:#1C1B19;
+    --accent-tint:color-mix(in oklab,var(--accent),var(--paper) 72%);
+    --accent-deep:color-mix(in oklab,var(--accent),white 30%);
+    --ok-tint:color-mix(in oklab,var(--ok),var(--paper) 70%);
+    --warn-tint:color-mix(in oklab,var(--warn),var(--paper) 70%);
+    --fail-tint:color-mix(in oklab,var(--fail),var(--paper) 70%);
+    color-scheme:dark;
   }
 }
-:root[data-theme="dark"] {
-  --bg: #0D0F11; --card: #16181B; --ink: #F2F1EE; --muted: #A6A8AC; --line: #2A2D31;
-  --weekend: #1C1F22; --accent: #A9C8A6; --guest: #5E8A5C; --guest-ink: #0D0F11;
-  --block: #4A4D52; --turn: #f0a93a; --today: #ED5454; --bad: #ff8a80; --warn: #f2c14e;
-  --good: #7fd69c; color-scheme: dark;
+:root[data-theme="dark"],:root[data-theme="dark"] [data-hue]{
+  --ground:#1C1B19; --paper:#252421; --stone:#302E2B; --stone-2:#4A4743; --taupe:#5E544D;
+  --ink:#E8E5DF; --ink-2:#B3AFA7; --ink-3:#85827B; --ink-dim:#5C5954; --on-ink:#1C1B19;
+  --accent-tint:color-mix(in oklab,var(--accent),var(--paper) 72%);
+  --accent-deep:color-mix(in oklab,var(--accent),white 30%);
+  --ok-tint:color-mix(in oklab,var(--ok),var(--paper) 70%);
+  --warn-tint:color-mix(in oklab,var(--warn),var(--paper) 70%);
+  --fail-tint:color-mix(in oklab,var(--fail),var(--paper) 70%);
+  color-scheme:dark;
+}
+
+/* ── Base ── */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--ground); color:var(--ink); font-family:var(--type);
+  font-size:var(--t-md); line-height:1.65; -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif); font-weight:500; line-height:1.1; letter-spacing:-.01em; margin:0 0 var(--s3); color:var(--ink)}
+h1{font-size:var(--t-3xl)} h2{font-size:var(--t-2xl)} h3{font-size:var(--t-xl)} h4{font-size:1.3rem}
+h1 em,h2 em,h3 em,h4 em{font-style:italic; font-weight:400}
+p{margin:0 0 var(--s4)}
+a{color:var(--accent-deep); text-decoration-thickness:1px; text-underline-offset:3px}
+a:hover{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--r-xs)}
+::selection{background:var(--accent-tint); color:var(--ink)}
+code,kbd,pre,.o-mono{font-family:var(--mono); font-size:.92em}
+.o-num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+hr,.o-rule{border:0; height:1px; background:var(--stone-2); margin:var(--s7) 0}
+
+/* ── Display: the serif at size. One per screen. ── */
+.o-display{font-family:var(--serif); font-weight:500; font-size:clamp(2.5rem,7vw,var(--t-4xl)); line-height:1.02; letter-spacing:-.015em}
+.o-display em{font-style:italic; font-weight:400}
+.o-wordmark{font-family:var(--serif); font-weight:600; font-size:var(--t-xl); line-height:1; letter-spacing:-.01em; color:var(--ink); text-decoration:none}
+
+/* ── The one place spaced capitals are allowed: a single date-and-place line per screen ── */
+.o-dateline{font-family:var(--mono); font-size:var(--t-xs); letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); margin-bottom:var(--s4)}
+.o-ticker{display:flex; gap:var(--s6); overflow:hidden; white-space:nowrap; padding:9px var(--s5);
+  background:var(--taupe); color:#F6F5F2; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase}
+.o-ticker > :nth-child(n+3){opacity:.75}
+@media (max-width:640px){.o-ticker > :nth-child(n+2){display:none}}
+
+/* ── Labels and small print: sentence case ── */
+.o-label{display:block; font-size:var(--t-sm); font-weight:700; color:var(--ink-2); margin-bottom:var(--s2)}
+.o-meta{font-family:var(--mono); font-size:var(--t-xs); color:var(--ink-3)}
+.o-lede{font-size:var(--t-lg); color:var(--ink-2); max-width:62ch}
+
+/* ── Text that types itself: add .o-typing; the cursor is the app's colour ── */
+.o-typing::after,.o-cursor{content:""; display:inline-block; width:2px; height:1.1em; background:var(--accent); margin-left:2px; vertical-align:-3px; animation:o-blink 1s steps(1) infinite}
+@keyframes o-blink{50%{opacity:0}}
+
+/* ── App bar: quiet, on the ground. Serif wordmark, text links, accent underline. ── */
+.o-bar{display:flex; align-items:baseline; gap:var(--s5); padding:var(--s4) var(--s5); min-height:60px}
+.o-bar__spacer{flex:1}
+.o-bar a,.o-bar__link{font:inherit; font-size:var(--t-sm); color:var(--ink-2); text-decoration:none; background:none; border:0; padding:var(--s1) 0; cursor:pointer}
+.o-bar a:hover,.o-bar__link:hover{color:var(--ink)}
+.o-bar .is-current,.o-bar [aria-current]{color:var(--ink); text-decoration:underline; text-decoration-color:var(--accent); text-decoration-thickness:2px; text-underline-offset:7px}
+
+/* ── Page ── */
+.o-page{max-width:1080px; margin:0 auto; padding:var(--s6) var(--s5) var(--s8)}
+.o-page--read{max-width:720px}
+@media (max-width:640px){.o-page{padding:var(--s5) var(--s4) var(--s8)} .o-bar{padding:var(--s3) var(--s4); gap:var(--s4)}}
+
+/* ── Buttons: quiet. Charcoal for the one thing to do, a line for the other, text for the rest. ── */
+.o-btn{display:inline-flex; align-items:center; justify-content:center; gap:var(--s2); min-height:44px; padding:0 var(--s5);
+  border:0; border-radius:var(--r-sm); background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink-3);
+  font:inherit; font-size:.9375rem; line-height:1; cursor:pointer; text-decoration:none; transition:background .15s,color .15s,box-shadow .15s}
+.o-btn:hover{box-shadow:inset 0 0 0 1px var(--ink); color:var(--ink)}
+.o-btn:disabled,.o-btn[aria-disabled="true"]{opacity:.45; cursor:not-allowed}
+.o-btn--primary{background:var(--ink); color:var(--on-ink); box-shadow:none}
+.o-btn--primary:hover{background:color-mix(in oklab,var(--ink),var(--accent) 22%); color:var(--on-ink); box-shadow:none}
+.o-btn--danger{background:var(--fail); color:#fff; box-shadow:none}
+.o-btn--danger:hover{background:color-mix(in oklab,var(--fail),black 12%); color:#fff; box-shadow:none}
+.o-btn--quiet{box-shadow:none; color:var(--accent-deep); padding:0 var(--s1); text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px}
+.o-btn--quiet:hover{box-shadow:none; color:var(--accent)}
+.o-btn--sm{min-height:34px; padding:0 var(--s4); font-size:var(--t-sm)}
+.o-btn--block{width:100%}
+
+/* ── Fields: a stone fill; paper and an accent ring when typing ── */
+.o-field{display:block; width:100%; min-height:46px; padding:var(--s3) var(--s4); border:0; border-radius:var(--r-md);
+  background:var(--stone); color:var(--ink); font:inherit; box-shadow:inset 0 0 0 1.5px transparent; transition:background .15s,box-shadow .15s}
+.o-field::placeholder{color:var(--ink-3)}
+.o-field:focus{outline:none; background:var(--paper); box-shadow:inset 0 0 0 1.5px var(--accent)}
+textarea.o-field{min-height:140px; resize:vertical; line-height:1.6}
+
+/* ── Chips ── */
+.o-chip{display:inline-flex; align-items:center; gap:var(--s1); padding:2px var(--s2); border:0; border-radius:var(--r-xs);
+  background:var(--stone); color:var(--ink-2); font:inherit; font-size:var(--t-sm); line-height:1.5}
+button.o-chip{cursor:pointer}
+.o-chip[aria-pressed="true"],.o-chip.is-on{background:var(--accent-tint); color:var(--accent-deep)}
+.o-chip--ok{background:var(--ok-tint); color:var(--ink)} .o-chip--warn{background:var(--warn-tint); color:var(--ink)} .o-chip--fail{background:var(--fail-tint); color:var(--ink)}
+
+/* ── Panels: paper on the ground. No borders, no shadows. ── */
+.o-panel{background:var(--paper); border-radius:var(--r-lg); padding:var(--s5)}
+.o-panel--tint{background:var(--accent-tint)}
+
+/* ── Stones: rows of paper with the ground showing between ── */
+.o-stones{display:flex; flex-direction:column; gap:3px; margin:0; padding:0; list-style:none}
+.o-stone{display:flex; align-items:center; gap:var(--s4); padding:var(--s4) var(--s5); background:var(--paper); border-radius:var(--r-xs); color:inherit; text-decoration:none}
+.o-stones > .o-stone:first-child{border-top-left-radius:var(--r-md); border-top-right-radius:var(--r-md)}
+.o-stones > .o-stone:last-child{border-bottom-left-radius:var(--r-md); border-bottom-right-radius:var(--r-md)}
+a.o-stone:hover,button.o-stone:hover{background:var(--accent-tint)}
+button.o-stone{width:100%; border:0; font:inherit; text-align:left; cursor:pointer}
+.o-stone__main{flex:1; min-width:0}
+.o-stone__title{display:block; font-family:var(--serif); font-size:1.25rem; font-weight:500; line-height:1.25}
+.o-stone__sub{display:block; font-size:var(--t-sm); color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+/* ── Cards: soft pastel tiles (Craft). Tint with data-tint, default paper. ── */
+.o-cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:var(--s3)}
+.o-card{display:flex; flex-direction:column; gap:var(--s2); min-height:150px; padding:var(--s4); border-radius:var(--r-md);
+  background:var(--paper); color:inherit; text-decoration:none; --tint:var(--paper)}
+.o-card[data-tint]{background:color-mix(in oklab,var(--tint),var(--paper) 85%)}
+.o-card[data-tint="heather"]{--tint:var(--heather)} .o-card[data-tint="sea"]{--tint:var(--sea)} .o-card[data-tint="teal"]{--tint:var(--teal)}
+.o-card[data-tint="moss"]{--tint:var(--moss)} .o-card[data-tint="ochre"]{--tint:var(--ochre)} .o-card[data-tint="blossom"]{--tint:var(--blossom)}
+.o-card__title{margin:0; font-family:var(--serif); font-size:1.25rem; font-weight:500; line-height:1.15}
+.o-card__text{margin:0; font-size:var(--t-sm); color:var(--ink-2); line-height:1.5; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden}
+.o-card .o-meta{margin-top:auto}
+a.o-card:hover{filter:brightness(.98)}
+
+/* ── Tabs: words with an accent underline ── */
+.o-tabs{display:flex; gap:var(--s5); border-bottom:1px solid var(--stone-2)}
+.o-tab{border:0; background:none; font:inherit; font-size:var(--t-sm); color:var(--ink-2); padding:var(--s2) 0; margin-bottom:-1px; cursor:pointer; border-bottom:2px solid transparent}
+.o-tab:hover{color:var(--ink)}
+.o-tab[aria-selected="true"],.o-tab.is-current{color:var(--ink); border-bottom-color:var(--accent)}
+
+/* ── Stats ── */
+.o-stat{display:flex; flex-direction:column; gap:var(--s1)}
+.o-stat__n{font-family:var(--mono); font-weight:700; font-size:var(--t-3xl); line-height:1; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.o-stat__l{font-size:var(--t-sm); color:var(--ink-2)}
+
+/* ── One big figure (the flip clock) ── */
+.o-figure{display:flex; gap:var(--s3); justify-content:center; align-items:stretch; padding:var(--s5); border-radius:var(--r-lg); background:#141413; color:#D9D7D2; min-height:280px}
+.o-tile{position:relative; flex:1; max-width:240px; display:flex; align-items:center; justify-content:center; border-radius:var(--r-md); background:#232321;
+  font-family:var(--mono); font-weight:700; font-size:clamp(5rem,13vw,9.5rem); line-height:1; letter-spacing:-.05em; font-variant-numeric:tabular-nums}
+.o-tile::after{content:""; position:absolute; left:0; right:0; top:50%; height:2px; background:#141413}
+.o-tile__label{position:absolute; left:14px; bottom:12px; font-size:var(--t-sm); letter-spacing:.1em; color:#8E8C86}
+.o-tile--words{font-family:var(--serif); font-weight:400; font-size:clamp(2.2rem,5vw,3.5rem); letter-spacing:0; line-height:1.15; text-align:center; padding:var(--s5); max-width:380px; flex:1.5}
+.o-tile--words::after{display:none}
+
+/* ── Status dot ── */
+.o-dot{display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--ink-3); flex:none}
+.o-dot--ok{background:var(--ok)} .o-dot--warn{background:var(--warn)} .o-dot--fail{background:var(--fail)}
+
+/* ── Notice: a tinted block, serif first line. No coloured left edge. ── */
+.o-notice{background:var(--stone); border-radius:var(--r-md); padding:var(--s4) var(--s5)}
+.o-notice > strong:first-child{display:block; font-family:var(--serif); font-size:1.25rem; font-weight:600; margin-bottom:var(--s1)}
+.o-notice--ok{background:var(--ok-tint)} .o-notice--warn{background:var(--warn-tint)} .o-notice--fail{background:var(--fail-tint)}
+
+/* ── Writing view: just the note. Options slide down from the top edge (desktop)
+      or on tap (phone: toggle .show-bar on .o-write). ── */
+.o-write{position:relative; min-height:100dvh; background:var(--paper); padding:var(--s8) 0 var(--s8)}
+.o-write__zone{position:absolute; inset:0 0 auto 0; height:44px; z-index:3}
+.o-write__bar{position:absolute; inset:0 0 auto 0; z-index:4; display:flex; align-items:center; gap:var(--s5); padding:var(--s3) var(--s5);
+  background:var(--paper); border-bottom:1px solid var(--stone); font-size:var(--t-sm); transform:translateY(-101%); transition:transform .25s var(--ease)}
+.o-write__zone:hover + .o-write__bar,.o-write__bar:hover,.o-write__bar:focus-within,.o-write.show-bar .o-write__bar{transform:none}
+.o-write__bar a,.o-write__bar button{color:var(--ink-2); text-decoration:none; background:none; border:0; font:inherit; cursor:pointer; padding:var(--s1) 0}
+.o-write__bar a:hover,.o-write__bar button:hover{color:var(--accent-deep)}
+.o-write__bar .o-bar__spacer{flex:1}
+.o-write--fixed .o-write__zone,.o-write--fixed .o-write__bar{position:fixed}
+.o-note{max-width:660px; margin:0 auto; padding:0 var(--s6)}
+.o-note h1{font-size:clamp(2.2rem,5vw,2.9rem); margin-bottom:var(--s5)}
+.o-note h2{font-size:1.9rem; margin-top:var(--s6)} .o-note h3{font-size:1.6rem; margin-top:var(--s5)}
+.o-note p,.o-note li{font-size:1.0625rem; line-height:1.75}
+.o-note .is-dim{color:var(--ink-dim); transition:color .3s}
+.o-note blockquote{margin:0 0 var(--s4); padding-left:var(--s4); color:var(--ink-2); font-style:italic}
+.o-md{color:var(--stone-2); font-family:var(--type); font-style:normal; font-weight:400}
+.o-note h1 .o-md,.o-note h2 .o-md,.o-note h3 .o-md{font-size:1rem; vertical-align:.35em}
+@media (max-width:640px){.o-note{padding:0 var(--s5)} .o-write{padding-top:var(--s7)}}
+
+/* ── Picture mood (Trips, Wishing Stream tools; never Open Brain): a real photo or
+      silent looping video leads, darkening at the bottom so white words sit on it. ── */
+.o-picture{position:relative; isolation:isolate; display:flex; flex-direction:column; justify-content:flex-end; min-height:70vh; overflow:hidden;
+  color:#fff; background:#2B2925 var(--img,none) center/cover no-repeat}
+.o-picture__media{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2}
+.o-picture::before{content:""; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(to bottom,rgba(40,36,32,.18) 0%,rgba(40,36,32,0) 28%,rgba(40,36,32,.72) 100%)}
+.o-picture__top{position:absolute; inset:0 0 auto 0; display:flex; justify-content:space-between; align-items:baseline; padding:var(--s4) var(--s5)}
+.o-picture__top .o-wordmark{color:#fff}
+.o-picture__body{padding:0 var(--s6) var(--s5)}
+.o-picture__body h1,.o-picture__body h2,.o-picture__body h3{color:#fff}
+.o-picture__body p{opacity:.88; max-width:42ch}
+.o-picture__foot{display:flex; justify-content:space-between; align-items:center; gap:var(--s4); padding:var(--s3) var(--s6) var(--s4); border-top:1px solid rgba(255,255,255,.2); font-size:var(--t-sm)}
+.o-picture__icons{display:flex; gap:var(--s5)}
+.o-picture__icons svg{width:20px; height:20px; stroke:#fff; fill:none; stroke-width:1.5}
+.o-caption{font-size:var(--t-sm); opacity:.9}
+
+/* ── Gate (locked screen): calm, on the ground; serif wordmark, a typing line, field, one button ── */
+.o-gate{min-height:100dvh; display:flex; flex-direction:column; justify-content:center; padding:var(--s7) var(--s5)}
+.o-gate__inner{width:100%; max-width:440px; margin:0 auto}
+.o-gate .o-display{margin-bottom:var(--s2)}
+.o-gate .o-field{margin:var(--s5) 0 var(--s3)}
+
+/* ── Phone: primary action in a bottom bar ── */
+.o-actionbar{position:sticky; bottom:0; display:flex; gap:var(--s3); padding:var(--s3) var(--s4) calc(var(--s3) + env(safe-area-inset-bottom));
+  background:color-mix(in oklab,var(--ground),transparent 6%); backdrop-filter:blur(8px)}
+.o-actionbar .o-btn{flex:1}
+
+/* ══ v2.1 (Review 2, 4 Nov 2026): pieces for apps with several functions ══ */
+
+/* ── App frame with a rail: the functions down the left (all five planners).
+   .o-app > .o-rail + .o-main (+ .o-side for a timeline). On the phone the rail
+   hides and .o-tabbar (five items) sits at the bottom. ── */
+.o-app{display:grid; grid-template-columns:232px minmax(0,1fr); min-height:100vh}
+.o-app--split{grid-template-columns:232px minmax(0,1fr) 300px}
+.o-rail{background:var(--ground); padding:var(--s5) var(--s3); display:flex; flex-direction:column; gap:2px}
+.o-rail .o-wordmark{padding:0 var(--s3) var(--s4); font-size:1.5rem}
+.o-rail__group{font-size:var(--t-xs); color:var(--ink-3); padding:var(--s4) var(--s3) var(--s1)}
+.o-rail__item{display:flex; align-items:center; gap:var(--s3); padding:7px var(--s3); min-height:36px; border:0; border-radius:var(--r-sm);
+  background:none; font:inherit; font-size:var(--t-sm); color:var(--ink-2); text-decoration:none; text-align:left; cursor:pointer}
+.o-rail__item i{font-size:20px}
+.o-rail__item .o-num{margin-left:auto; font-size:var(--t-xs); color:var(--ink-3)}
+.o-rail__item:hover{background:var(--stone); color:var(--ink)}
+.o-rail__item.is-current,.o-rail__item[aria-current]{background:var(--paper); color:var(--ink)}
+.o-rail__item.is-current i,.o-rail__item[aria-current] i{color:var(--accent)}
+.o-main{background:var(--paper); padding:var(--s6) var(--s6) var(--s7); min-width:0}
+.o-side{background:var(--ground); padding:var(--s5) var(--s4); min-width:0}
+.o-tabbar{display:none}
+@media (max-width:760px){
+  .o-app,.o-app--split{grid-template-columns:1fr}
+  .o-rail,.o-side--desk{display:none}
+  .o-main{padding:var(--s5) var(--s4) 96px}
+  .o-tabbar{display:flex; position:fixed; left:0; right:0; bottom:0; z-index:20; justify-content:space-around;
+    background:var(--ground); padding:var(--s2) var(--s2) calc(var(--s3) + env(safe-area-inset-bottom))}
+  .o-tabbar a,.o-tabbar button{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:56px; min-height:44px;
+    border:0; background:none; font:inherit; font-size:var(--t-xs); color:var(--ink-3); text-decoration:none; cursor:pointer}
+  .o-tabbar i{font-size:24px}
+  .o-tabbar .is-current,.o-tabbar [aria-current]{color:var(--ink)}
+  .o-tabbar .is-current i,.o-tabbar [aria-current] i{color:var(--accent)}
+}
+
+/* ── Capture: one field for anything, with photo and mic buttons (Todoist's
+   Write · Attach · Speak). Add .is-listening while the mic is on. ── */
+.o-capture{display:flex; align-items:center; gap:var(--s2); background:var(--ground); border-radius:var(--r-md); padding:var(--s2) var(--s2) var(--s2) var(--s4); min-height:52px}
+.o-capture input,.o-capture textarea{flex:1; min-width:0; border:0; background:none; font:inherit; color:var(--ink); padding:var(--s2) 0; resize:none}
+.o-capture input:focus,.o-capture textarea:focus{outline:none}
+.o-capture:focus-within{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.o-capture__btn{display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:var(--r-sm); background:none; color:var(--ink-2); cursor:pointer; font-size:22px}
+.o-capture__btn:hover{background:var(--stone); color:var(--ink)}
+.o-capture.is-listening{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.o-capture.is-listening .o-capture__mic{background:var(--accent); color:var(--on-ink)}
+
+/* ── Task row: round tick, the words, quiet meta, a time in mono on the right (Sunsama). ── */
+.o-tasks{list-style:none; margin:0; padding:0}
+.o-task{display:flex; align-items:flex-start; gap:var(--s3); padding:var(--s3) 0; min-height:44px}
+.o-task + .o-task{box-shadow:0 -1px 0 var(--stone)}
+.o-task__tick{flex:none; width:20px; height:20px; margin-top:2px; border:0; border-radius:50%; box-shadow:inset 0 0 0 1.5px var(--ink-3);
+  background:none; color:transparent; display:grid; place-items:center; font-size:13px; cursor:pointer}
+.o-task__tick:hover{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.o-task.is-done .o-task__tick{background:var(--accent); box-shadow:none; color:var(--on-ink)}
+.o-task__main{flex:1; min-width:0}
+.o-task__title{display:block}
+.o-task.is-done .o-task__title{color:var(--ink-3); text-decoration:line-through; text-decoration-color:var(--ink-dim)}
+.o-task__meta{display:block; margin-top:2px; font-size:var(--t-xs); color:var(--ink-3)}
+.o-task__time{flex:none; padding-top:3px; font-family:var(--mono); font-size:var(--t-xs); color:var(--ink-3)}
+.o-task__time.is-due{color:var(--accent-deep)}
+
+/* ── Day timeline: hours down the side. Events from calendar feeds in stone; planned
+   blocks in a soft tint (data-tint); "now" in the accent. Position blocks with
+   top/height from (hour - first hour) × --hour. ── */
+.o-day{position:relative; --hour:52px}
+.o-day__hour{height:var(--hour); display:flex; gap:var(--s2); font-family:var(--mono); font-size:var(--t-xs); color:var(--ink-3)}
+.o-day__hour::after{content:""; flex:1; height:1px; margin-top:.6em; background:var(--stone)}
+.o-day__block{position:absolute; left:44px; right:0; padding:5px var(--s2); border-radius:var(--r-sm); overflow:hidden;
+  font-size:var(--t-xs); line-height:1.35; background:var(--stone); color:var(--ink); --tint:var(--stone)}
+.o-day__block b{display:block; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.o-day__block small{display:block; font-size:inherit; color:var(--ink-2)}
+.o-day__block[data-tint]{background:color-mix(in oklab,var(--tint),var(--paper) 78%)}
+.o-day__block[data-tint="heather"]{--tint:var(--heather)} .o-day__block[data-tint="sea"]{--tint:var(--sea)} .o-day__block[data-tint="teal"]{--tint:var(--teal)}
+.o-day__block[data-tint="moss"]{--tint:var(--moss)} .o-day__block[data-tint="ochre"]{--tint:var(--ochre)} .o-day__block[data-tint="blossom"]{--tint:var(--blossom)}
+.o-day__now{position:absolute; left:36px; right:0; height:2px; background:var(--accent)}
+.o-day__now::before{content:""; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+
+/* ── Suggestion: a helper's proposal waiting for a yes. Nothing is filed until Stewart taps.
+   .o-suggest > __said (with .o-meta) + __to (icon + one <span> of words) + __acts; .is-filed after. ── */
+.o-suggest{background:var(--ground); border-radius:var(--r-md); padding:var(--s4)}
+.o-suggest + .o-suggest{margin-top:var(--s3)}
+.o-suggest__said{margin:0 0 var(--s3)}
+.o-suggest__said .o-meta{display:block; margin-bottom:var(--s1)}
+.o-suggest__to{display:flex; align-items:flex-start; gap:var(--s2); margin-bottom:var(--s3); font-size:var(--t-sm)}
+.o-suggest__to i{flex:none; margin-top:1px; font-size:18px; color:var(--accent)}
+.o-suggest__to > span{flex:1; min-width:0}
+.o-suggest__acts{display:flex; flex-wrap:wrap; gap:var(--s2)}
+.o-suggest.is-filed{opacity:.55}
+.o-suggest.is-filed .o-suggest__acts{display:none}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important; animation:none!important}}
+/* otter:end */
+
+/* Wishing Stream owner in Otter (blossom), 5 Nov 2026: greige ground, paper
+   cards, typewriter words, serif headings, mono figures. Guest stays are a
+   soft blossom tint, owner blocks hatched stone, turnovers ochre. Ids and
+   classes are unchanged. */
+:root, [data-hue] {
+  --weekend: color-mix(in oklab, var(--stone), var(--paper) 45%);
+  --guest: color-mix(in oklab, var(--accent), var(--paper) 62%);
+  --guest-ink: var(--ink);
+  --block: var(--stone-2);
+  --turn: var(--warn);
 }
 
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--ground);
   color: var(--ink);
-  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--type); font-size: 16px; line-height: 1.6;
 }
 [hidden] { display: none !important; }
 
@@ -61,46 +387,46 @@ body {
 main { max-width: 64rem; margin: 0 auto; padding: 0 16px 3rem; }
 
 .card {
-  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  background: var(--paper); border: 1px solid var(--stone); border-radius: 12px;
   padding: 1rem 1rem 1.1rem; margin: 0 0 1rem;
 }
 .card h2 { font-size: 1rem; margin: 0 0 0.75rem; }
 .narrow { max-width: 26rem; margin: 2rem auto; }
 
-label { display: block; font-size: 0.9rem; color: var(--muted); margin: 0.5rem 0 0.3rem; }
+label { display: block; font-size: 0.9rem; color: var(--ink-2); margin: 0.5rem 0 0.3rem; }
 input {
   width: 100%; font: inherit; padding: 0.6rem 0.7rem; border-radius: 8px;
-  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  border: 1px solid var(--stone); background: var(--ground); color: var(--ink);
 }
 input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 button {
   font: inherit; cursor: pointer; border-radius: 8px; border: 0;
-  background: var(--accent); color: var(--card); padding: 0.6rem 1rem; margin-top: 0.8rem;
+  background: var(--accent); color: var(--paper); padding: 0.6rem 1rem; margin-top: 0.8rem;
 }
 button.link { background: none; color: var(--accent); padding: 0.3rem 0.4rem; margin: 0; }
 button.nav {
-  background: none; color: var(--ink); border: 1px solid var(--line);
+  background: none; color: var(--ink); border: 1px solid var(--stone);
   width: 2.2rem; height: 2.2rem; padding: 0; margin: 0; font-size: 1.2rem; line-height: 1;
 }
-.hint { color: var(--muted); font-size: 0.9rem; margin: 0.8rem 0 0; }
-.secret { display: block; word-break: break-all; padding: 0.5rem; background: var(--bg); border-radius: 6px; }
+.hint { color: var(--ink-2); font-size: 0.9rem; margin: 0.8rem 0 0; }
+.secret { display: block; word-break: break-all; padding: 0.5rem; background: var(--ground); border-radius: 6px; }
 #qr { display: block; margin: 0.5rem 0; background: #fff; padding: 8px; border-radius: 8px; }
 details { margin: 0.5rem 0; }
 
-.status { min-height: 1.4em; margin: 0.5rem 0; color: var(--muted); }
-.status.bad { color: var(--bad); }
+.status { min-height: 1.4em; margin: 0.5rem 0; color: var(--ink-2); }
+.status.bad { color: var(--fail); }
 
 /* Next two weeks */
 .upcoming { list-style: none; margin: 0; padding: 0; }
 .ev {
   display: grid; grid-template-columns: 6.5rem 1fr; gap: 0 0.75rem;
-  padding: 0.5rem 0; border-top: 1px solid var(--line);
+  padding: 0.5rem 0; border-top: 1px solid var(--stone);
 }
 .ev:first-child { border-top: 0; }
 .ev-date { font-weight: 600; grid-row: span 2; }
-.ev-kind { color: var(--muted); font-size: 0.9rem; }
+.ev-kind { color: var(--ink-2); font-size: 0.9rem; }
 .ev-turnover .ev-kind { color: var(--turn); font-weight: 600; }
-.empty { color: var(--muted); }
+.empty { color: var(--ink-2); }
 
 /* Month */
 .month-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
@@ -111,18 +437,18 @@ details { margin: 0.5rem 0; }
   display: grid; grid-template-columns: var(--name) repeat(var(--days), minmax(1.5rem, 1fr));
   grid-auto-rows: 2.2rem; align-items: center; position: relative;
 }
-.row + .row { border-top: 1px solid var(--line); }
+.row + .row { border-top: 1px solid var(--stone); }
 .row.head { grid-auto-rows: 1.8rem; }
 .name {
   grid-column: 1; grid-row: 1; font-size: 0.9rem; font-weight: 600; padding-right: 0.5rem;
-  position: sticky; left: 0; background: var(--card); z-index: 2; height: 100%;
+  position: sticky; left: 0; background: var(--paper); z-index: 2; height: 100%;
   display: flex; align-items: center; line-height: 1.15;
 }
-.day { grid-row: 1; text-align: center; font-size: 0.75rem; color: var(--muted); }
-.day.today { color: var(--today); font-weight: 700; }
+.day { grid-row: 1; text-align: center; font-size: 0.75rem; color: var(--ink-2); }
+.day.today { color: var(--accent); font-weight: 700; }
 .cell { grid-row: 1; height: 100%; }
 .weekend { background: var(--weekend); }
-.cell.today { box-shadow: inset 2px 0 0 var(--today); }
+.cell.today { box-shadow: inset 2px 0 0 var(--accent); }
 .bar {
   grid-row: 1; height: 1.5rem; margin: 0 2px; border-radius: 6px; z-index: 1;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -143,7 +469,7 @@ details { margin: 0.5rem 0; }
 .bar-hold { color: var(--guest); background: transparent; border: 2px dashed var(--guest); }
 .bar-direct { background: var(--guest); color: var(--guest-ink); box-shadow: inset 0 -3px 0 var(--turn); }
 
-.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; list-style: none; padding: 0; margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; list-style: none; padding: 0; margin: 0.75rem 0 0; font-size: 0.85rem; color: var(--ink-2); }
 .key { display: inline-block; width: 1.2rem; height: 0.8rem; border-radius: 3px; margin-right: 0.4rem; vertical-align: -1px; }
 .key-guest { background: var(--guest); }
 .key-block { background: repeating-linear-gradient(135deg, var(--block) 0 3px, transparent 3px 6px); border: 1px solid var(--block); }
@@ -155,59 +481,59 @@ details { margin: 0.5rem 0; }
 .feeds { list-style: none; margin: 0; padding: 0; }
 .feed {
   display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.75rem;
-  padding: 0.5rem 0; border-top: 1px solid var(--line);
+  padding: 0.5rem 0; border-top: 1px solid var(--stone);
 }
 .feed:first-child { border-top: 0; }
 .feed-name { font-weight: 600; }
 .feed-state { font-weight: 600; text-align: right; }
-.feed-when { color: var(--muted); font-size: 0.9rem; grid-column: 1 / -1; }
-.feed-error { color: var(--bad); font-size: 0.9rem; grid-column: 1 / -1; }
-.feed-ok .feed-state { color: var(--good); }
+.feed-when { color: var(--ink-2); font-size: 0.9rem; grid-column: 1 / -1; }
+.feed-error { color: var(--fail); font-size: 0.9rem; grid-column: 1 / -1; }
+.feed-ok .feed-state { color: var(--ok); }
 .feed-stale .feed-state, .feed-never .feed-state { color: var(--warn); }
-.feed-failing .feed-state { color: var(--bad); }
-.feed-inactive .feed-state { color: var(--muted); }
+.feed-failing .feed-state { color: var(--fail); }
+.feed-inactive .feed-state { color: var(--ink-2); }
 
 /* Money */
 .money summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
 .money summary::-webkit-details-marker { display: none; }
 .money summary h2 { margin: 0; }
-.money summary h2::before { content: "▸ "; color: var(--muted); }
+.money summary h2::before { content: "▸ "; color: var(--ink-2); }
 .money[open] summary h2::before { content: "▾ "; }
-.hint-inline { color: var(--muted); font-size: 0.85rem; }
+.hint-inline { color: var(--ink-2); font-size: 0.85rem; }
 .money-bar { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem; }
 .money-bar h3 { margin: 0; min-width: 4rem; text-align: center; font-size: 1rem; }
 .figures { width: 100%; border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-.figures th, .figures td { text-align: right; padding: 0.45rem 0.4rem; border-top: 1px solid var(--line); }
-.figures thead th { color: var(--muted); font-weight: 500; font-size: 0.8rem; border-top: 0; }
+.figures th, .figures td { text-align: right; padding: 0.45rem 0.4rem; border-top: 1px solid var(--stone); }
+.figures thead th { color: var(--ink-2); font-weight: 500; font-size: 0.8rem; border-top: 0; }
 .figures th:first-child { text-align: left; }
 .figures .declare { font-weight: 700; }
-.figures .empty-row { color: var(--muted); }
+.figures .empty-row { color: var(--ink-2); }
 h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .gites { list-style: none; margin: 0; padding: 0; }
-.gites li { display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--line); }
+.gites li { display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--stone); }
 .gites li:first-child { border-top: 0; }
 .gite-name { font-weight: 600; }
-.gite-sum { grid-column: 1 / -1; color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
-.badge { font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; align-self: center; }
-.badge.classified { background: color-mix(in srgb, var(--good) 18%, transparent); color: var(--good); }
+.gite-sum { grid-column: 1 / -1; color: var(--ink-2); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.badge { font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: var(--r-xs); align-self: center; }
+.badge.classified { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
 .badge.unclassified { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
 .bankcheck { margin: 1rem 0 0; font-size: 0.9rem; }
-.bankcheck.ok { color: var(--good); }
+.bankcheck.ok { color: var(--ok); }
 .bankcheck.pending { color: var(--warn); }
 
 /* Money by category */
 .kinds, .kinds ul, .review { list-style: none; margin: 0; padding: 0; }
-.kinds > li { border-top: 1px solid var(--line); }
+.kinds > li { border-top: 1px solid var(--stone); }
 .kinds > li:first-child { border-top: 0; }
 .kind summary { display: flex; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; cursor: pointer; font-weight: 600; list-style: none; }
 .kind summary::-webkit-details-marker { display: none; }
-.kind summary > span:first-child::before { content: "▸ "; color: var(--muted); font-weight: 400; }
+.kind summary > span:first-child::before { content: "▸ "; color: var(--ink-2); font-weight: 400; }
 .kind[open] summary > span:first-child::before { content: "▾ "; }
-.kind ul li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.25rem 0 0.25rem 1rem; color: var(--muted); font-size: 0.9rem; }
+.kind ul li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.25rem 0 0.25rem 1rem; color: var(--ink-2); font-size: 0.9rem; }
 .amt { font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* Two figures on one line: let them wrap on a phone rather than push the page sideways. */
 .years .kind summary > .amt { white-space: normal; text-align: right; }
-.review li { display: grid; grid-template-columns: auto 1fr; gap: 0.1rem 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--line); }
+.review li { display: grid; grid-template-columns: auto 1fr; gap: 0.1rem 0.75rem; padding: 0.5rem 0; border-top: 1px solid var(--stone); }
 .review li:first-child { border-top: 0; }
 .rv-date { font-weight: 600; }
 .review .amt { text-align: right; font-weight: 600; }
@@ -217,12 +543,12 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 /* Guests */
 .hint-inline.prompt { color: var(--warn); font-weight: 600; }
 .guest-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
-.guest-list > li { padding: 0.75rem 0; border-top: 1px solid var(--line); }
+.guest-list > li { padding: 0.75rem 0; border-top: 1px solid var(--stone); }
 .guest-list > li:first-child { border-top: 0; }
 .guest-list > li.past { opacity: 0.6; }
 .g-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.1rem 1rem; }
 .g-name { font-weight: 600; }
-.g-when, .g-meta { color: var(--muted); font-size: 0.9rem; }
+.g-when, .g-meta { color: var(--ink-2); font-size: 0.9rem; }
 .g-meta { display: flex; gap: 0.75rem; }
 .g-ref { font-variant-numeric: tabular-nums; }
 .g-phone { display: inline-block; margin-top: 0.3rem; color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -230,15 +556,68 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .g-form { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
 .g-form input { flex: 1 1 12rem; padding: 0.45rem 0.6rem; }
 .g-form button { margin: 0; padding: 0.45rem 0.9rem; }
-.g-msg { font-size: 0.85rem; color: var(--muted); flex-basis: 100%; }
+.g-msg { font-size: 0.85rem; color: var(--ink-2); flex-basis: 100%; }
 .g-msg:empty { display: none; }
 
-.past-guests { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: 0.5rem; }
+.past-guests { margin-top: 1rem; border-top: 1px solid var(--stone); padding-top: 0.5rem; }
 .past-guests summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 0.5rem; }
 .past-guests summary::-webkit-details-marker { display: none; }
 .past-guests summary h3 { margin: 0.25rem 0; }
-.past-guests summary h3::before { content: "▸ "; color: var(--muted); }
+.past-guests summary h3::before { content: "▸ "; color: var(--ink-2); }
 .past-guests[open] summary h3::before { content: "▾ "; }
+
+
+/* ---------- Otter ---------- */
+.top { padding: var(--s5) 16px var(--s3); align-items: baseline; }
+.top h1 { font-family: var(--serif); font-size: var(--t-xl); font-weight: 600; letter-spacing: -.01em; }
+.h1-tag { font-family: var(--type); font-size: var(--t-sm); font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--ink-3); vertical-align: 0; margin-left: var(--s2); }
+.card { border: 0; border-radius: var(--r-lg); padding: var(--s5); margin: 0 0 var(--s3); }
+.card h2, .money summary h2 { font-family: var(--serif); font-size: 1.6rem; font-weight: 500; line-height: 1.15; }
+h3.sub, .money-bar h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; }
+/* Sign-in steps: on the ground, low and to the left (Otter gate), not a floating card */
+.narrow { max-width: 30rem; margin: 0; padding: 18vh 0 var(--s6); background: none; border-radius: 0; }
+.narrow h2 { font-size: var(--t-3xl); margin-bottom: var(--s4); }
+label { font-size: var(--t-sm); font-weight: 700; color: var(--ink-2); margin: var(--s3) 0 var(--s2); }
+input { border: 0; border-radius: var(--r-md); background: var(--stone); min-height: 46px; padding: var(--s3) var(--s4); }
+input:focus, input:focus-visible { outline: none; background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--accent); }
+input[type=checkbox], input[type=radio] { width: auto; min-height: 0; accent-color: var(--accent); }
+button { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink-3); border-radius: var(--r-sm); min-height: 44px; padding: 0 var(--s5); }
+button:hover { box-shadow: inset 0 0 0 1px var(--ink); }
+.narrow button[type=submit] { background: var(--ink); color: var(--on-ink); box-shadow: none; }
+.narrow button[type=submit]:hover { background: color-mix(in oklab, var(--ink), var(--accent) 22%); }
+button.link { box-shadow: none; color: var(--accent-deep); min-height: 36px; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+button.link:hover { box-shadow: none; color: var(--accent); }
+button.nav { border: 0; box-shadow: inset 0 0 0 1px var(--ink-3); width: 44px; height: 44px; border-radius: var(--r-sm); }
+.secret { font-family: var(--mono); background: var(--stone); border-radius: var(--r-sm); }
+.status { font-size: var(--t-sm); }
+.ev { border-top: 1px solid var(--stone); }
+.ev-date { font-family: var(--mono); font-weight: 400; font-size: var(--t-sm); }
+.month-bar h2 { font-size: 1.6rem; }
+.row + .row { border-top: 1px solid var(--stone); }
+.name { font-weight: 700; font-size: var(--t-sm); }
+.day { font-family: var(--mono); font-size: var(--t-xs); }
+.day.today { color: var(--accent-deep); }
+.cell.today { box-shadow: inset 2px 0 0 var(--accent); }
+.bar { border-radius: var(--r-xs); font-size: var(--t-xs); font-weight: 700; }
+.bar-block { border: 0; }
+.key { border-radius: 2px; }
+.key-block { border: 0; }
+.legend { font-size: var(--t-sm); }
+.feed { border-top: 1px solid var(--stone); }
+.feed-name, .feed-state, .gite-name, .g-name, .rv-date { font-weight: 700; }
+.feed-when { font-family: var(--mono); font-size: var(--t-xs); }
+.money summary h2::before, .past-guests summary h3::before, .kind summary > span:first-child::before { color: var(--ink-3); }
+.figures { font-family: var(--mono); font-size: var(--t-sm); }
+.figures thead th { font-family: var(--type); font-weight: 700; font-size: var(--t-xs); color: var(--ink-2); }
+.figures th, .figures td, .gites li, .kinds > li, .review li, .guest-list > li, .past-guests, .kept-total { border-color: var(--stone); }
+.badge { font-weight: 400; border-radius: var(--r-xs); color: var(--ink) !important; }
+.badge.classified { background: var(--ok-tint); }
+.badge.unclassified { background: var(--warn-tint); }
+.amt, .gite-sum, .g-ref, .g-phone { font-family: var(--mono); }
+.g-phone { color: var(--accent-deep); }
+.g-form button { min-height: 40px; padding: 0 var(--s4); }
+.t-draft textarea { border: 0; border-radius: var(--r-sm); background: var(--stone); font-family: var(--type); }
+.t-draft textarea:focus { outline: none; background: var(--ground); box-shadow: inset 0 0 0 1.5px var(--accent); }
 
 @media (max-width: 480px) {
   .figures { font-size: 0.8rem; }
@@ -254,22 +633,21 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 
 /* Enquiries & holds (O4) */
 .state { font-weight: 600; font-size: 0.85rem; }
-.state.new, .state.lapsed { color: var(--bad); }
+.state.new, .state.lapsed { color: var(--fail); }
 .state.responded, .state.soon { color: var(--warn); }
-.state.converted, .state.ok, .state.confirmed { color: var(--good); }
-.state.lost, .state.spam, .state.open { color: var(--muted); }
+.state.converted, .state.ok, .state.confirmed { color: var(--ok); }
+.state.lost, .state.spam, .state.open { color: var(--ink-2); }
 
 /* To do (O5) */
 .t-due { font-weight: 600; font-size: 0.85rem; }
-.t-due.overdue { color: var(--bad); }
+.t-due.overdue { color: var(--fail); }
 .t-due.today { color: var(--warn); }
 .t-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; align-items: center; }
 .t-actions a { font-size: 0.9rem; }
 .t-flag { color: var(--turn); font-weight: 600; font-size: 0.85rem; }
 .t-missing { color: var(--warn); font-size: 0.85rem; }
 .t-draft { margin-top: 0.5rem; }
-.t-draft textarea { width: 100%; font: inherit; font-size: 0.9rem; padding: 0.5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); }
-.kept-total { font-weight: 600; border-top: 1px solid var(--line); }
+.t-draft textarea { width: 100%; font: inherit; font-size: 0.9rem; padding: 0.5rem; border: 1px solid var(--stone); border-radius: 6px; background: var(--paper); color: var(--ink); }
+.kept-total { font-weight: 600; border-top: 1px solid var(--stone); }
 .owed .amt { color: var(--warn); }
 #kept > li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; }
-.h1-tag { font-size: 0.62em; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-left: 0.4em; vertical-align: 0.15em; }
