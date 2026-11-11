@@ -77,6 +77,15 @@
         <ol id="upcoming" class="upcoming"></ol>
       </section>
 
+      <!-- New bookings: what came in during the last fortnight, and when. Vrbo's
+           calendar feed has no booking date, so "booked" is when the sync first
+           saw the stay; the sync runs every half hour. -->
+      <section class="card">
+        <h2>New bookings</h2>
+        <p class="hint">The last two weeks, newest first. Booked means when the sync first saw it, within about half an hour.</p>
+        <ol id="new-bookings" class="upcoming"></ol>
+      </section>
+
       <!-- To do: the messages upcoming stays need. Closed by default (it shows
            guests' contact details); the heading says what is due. -->
       <details id="todo" class="card money">

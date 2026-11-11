@@ -426,6 +426,7 @@ details { margin: 0.5rem 0; }
 .ev-date { font-weight: 600; grid-row: span 2; }
 .ev-kind { color: var(--ink-2); font-size: 0.9rem; }
 .ev-turnover .ev-kind { color: var(--turn); font-weight: 600; }
+.ev-cancelled .ev-prop { text-decoration: line-through; color: var(--ink-2); }
 .empty { color: var(--ink-2); }
 
 /* Month */

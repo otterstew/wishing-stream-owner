@@ -180,7 +180,7 @@ async function api(path) {
 }
 
 function clearData() {
-  for (const id of ["upcoming", "grid", "feeds", "quarters", "gites", "kinds", "kept", "review", "guest-list", "past-list",
+  for (const id of ["upcoming", "new-bookings", "grid", "feeds", "quarters", "gites", "kinds", "kept", "review", "guest-list", "past-list",
     "enquiry-list", "direct-list", "gap-list", "task-list"]) $(id).replaceChildren();
   $("todo-prompt").textContent = "";
   $("todo").open = false;
@@ -206,6 +206,7 @@ async function load() {
     month ??= soon.today.slice(0, 7);
     today = soon.today;
     renderUpcoming(upcoming(soon.stays, soon.today, 14));
+    await loadNewBookings();
     await loadMonth();
     const { feeds } = await api("/feeds");
     renderFeeds(feeds);
@@ -219,6 +220,17 @@ async function load() {
 
 let today = new Date().toISOString().slice(0, 10);
 function addDaysToday(n) { return addDays(today, n); }
+
+// Its own try: if this list cannot load (say the function has not been
+// deployed with the route yet), the rest of the page still should.
+async function loadNewBookings() {
+  try {
+    const { bookings } = await api("/new-bookings");
+    renderNewBookings(bookings);
+  } catch (e) {
+    $("new-bookings").replaceChildren(el("li", { class: "empty" }, `Could not load new bookings: ${e.message}`));
+  }
+}
 
 async function loadMonth() {
   const r = monthRange(month);
@@ -249,6 +261,27 @@ function renderUpcoming(events) {
       el("span", { class: "ev-date" }, e.date === today ? "Today" : fmtDate(e.date)),
       el("span", { class: "ev-prop" }, names.get(e.property) ?? e.property),
       el("span", { class: "ev-kind" }, label[e.kind])));
+  }
+}
+
+// The browser's own clock and zone: "booked" is a moment, not a stay's date.
+const bookedFmt = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function renderNewBookings(bookings) {
+  const list = $("new-bookings");
+  list.replaceChildren();
+  if (bookings.length === 0) {
+    list.append(el("li", { class: "empty" }, "No new bookings in the last two weeks."));
+    return;
+  }
+  for (const b of bookings) {
+    const how = b.channel === "direct" ? "Direct" : b.channel === "vrbo" ? "Vrbo" : b.channel;
+    const detail = `${fmtDate(b.checkin)} → ${fmtDate(b.checkout)} · ${b.nights} night${b.nights === 1 ? "" : "s"} · ${how}` +
+      (b.cancelled ? " · since cancelled" : "");
+    list.append(el("li", { class: `ev${b.cancelled ? " ev-cancelled" : ""}` },
+      el("span", { class: "ev-date" }, `Booked ${bookedFmt.format(new Date(b.booked))}`),
+      el("span", { class: "ev-prop" }, names.get(b.property) ?? b.property),
+      el("span", { class: "ev-kind" }, detail)));
   }
 }
 
