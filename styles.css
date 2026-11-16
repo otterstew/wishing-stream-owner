@@ -1,10 +1,13 @@
-/* otter:start v2.1 — Otter design language. Source: ~/.claude/skills/otter-design/otter.css
+/* otter:start v2.2 — Otter design language. Source: ~/.claude/skills/otter-design/otter.css
    Paste this block whole into an app's <style>. Re-sync by replacing everything
    between otter:start and otter:end. App-specific CSS goes after otter:end.
    Also needed in <head>:
    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-   App colour: <html lang="en-GB" data-hue="heather|sea|teal|moss|ochre|blossom">  */
+   App colour: <html lang="en-GB" data-hue="heather|sea|teal|moss|ochre|blossom">
+   Contrast (v2.2): ink, ink-2, ink-3 and accent-deep pass WCAG AA (4.5:1) for text on
+   ground, paper and stone in light and dark, as do ok-text, warn-text and fail-text;
+   accent-mark and the signals pass 3:1 for icons, rings and dots. ink-dim is decoration only (focus-mode fade, strike lines).  */
 
 /* ── Typewriter faces: iA Writer Quattro (words) and Mono (numbers). SIL OFL, pinned. ── */
 @font-face{font-family:"iA Quattro";font-weight:400;font-style:normal;font-display:swap;src:url("https://cdn.jsdelivr.net/gh/iaolo/iA-Fonts@c6588670c71e9ac628acc27b72cde4bf12726b7f/iA%20Writer%20Quattro/Webfonts/iAWriterQuattroS-Regular.woff2") format("woff2")}
@@ -48,37 +51,43 @@
   --paper:#F6F5F2;    /* the note, rows, panels */
   --stone:#E1DFD8;    /* fields, chips, tracks */
   --stone-2:#CAC4BE;  /* rules, faded marks */
-  --taupe:#908077;    /* the ticker */
-  --ink:#3D3D39; --ink-2:#6B6A64; --ink-3:#9C9A93; --ink-dim:#B9B6AE;
+  --taupe:#6F6258;    /* the ticker */
+  --ink:#3D3D39; --ink-2:#4F4E48; --ink-3:#63615B; --ink-dim:#B9B6AE;
   --on-ink:#F6F5F2;
   --accent-tint:color-mix(in oklab,var(--accent),var(--paper) 86%);
-  --accent-deep:color-mix(in oklab,var(--accent),black 18%);
+  --accent-deep:color-mix(in oklab,var(--accent),black 18%);  /* accent for text */
+  --accent-mark:var(--accent);  /* accent for icons, rings, underlines, fills under icons */
   --ok-tint:color-mix(in oklab,var(--ok),var(--paper) 84%);
   --warn-tint:color-mix(in oklab,var(--warn),var(--paper) 84%);
   --fail-tint:color-mix(in oklab,var(--fail),var(--paper) 86%);
+  --ok-text:color-mix(in oklab,var(--ok),black 24%); --warn-text:color-mix(in oklab,var(--warn),black 24%); --fail-text:color-mix(in oklab,var(--fail),black 24%);  /* signals as words */
   color-scheme:light;
 }
 /* ── Dark: warm charcoal, not blue-black ── */
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]),:root:not([data-theme="light"]) [data-hue]{
     --ground:#1C1B19; --paper:#252421; --stone:#302E2B; --stone-2:#4A4743; --taupe:#5E544D;
-    --ink:#E8E5DF; --ink-2:#B3AFA7; --ink-3:#85827B; --ink-dim:#5C5954; --on-ink:#1C1B19;
+    --ink:#E8E5DF; --ink-2:#B3AFA7; --ink-3:#9A9790; --ink-dim:#5C5954; --on-ink:#1C1B19;
     --accent-tint:color-mix(in oklab,var(--accent),var(--paper) 72%);
-    --accent-deep:color-mix(in oklab,var(--accent),white 30%);
+    --accent-deep:color-mix(in oklab,var(--accent),white 38%); --accent-mark:var(--accent-deep);
+    --ok:#849A75; --warn:#BE965E; --fail:#C17569;
     --ok-tint:color-mix(in oklab,var(--ok),var(--paper) 70%);
     --warn-tint:color-mix(in oklab,var(--warn),var(--paper) 70%);
     --fail-tint:color-mix(in oklab,var(--fail),var(--paper) 70%);
+    --ok-text:color-mix(in oklab,var(--ok),white 35%); --warn-text:color-mix(in oklab,var(--warn),white 35%); --fail-text:color-mix(in oklab,var(--fail),white 35%);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"],:root[data-theme="dark"] [data-hue]{
   --ground:#1C1B19; --paper:#252421; --stone:#302E2B; --stone-2:#4A4743; --taupe:#5E544D;
-  --ink:#E8E5DF; --ink-2:#B3AFA7; --ink-3:#85827B; --ink-dim:#5C5954; --on-ink:#1C1B19;
+  --ink:#E8E5DF; --ink-2:#B3AFA7; --ink-3:#9A9790; --ink-dim:#5C5954; --on-ink:#1C1B19;
   --accent-tint:color-mix(in oklab,var(--accent),var(--paper) 72%);
-  --accent-deep:color-mix(in oklab,var(--accent),white 30%);
+  --accent-deep:color-mix(in oklab,var(--accent),white 38%); --accent-mark:var(--accent-deep);
+    --ok:#849A75; --warn:#BE965E; --fail:#C17569;
   --ok-tint:color-mix(in oklab,var(--ok),var(--paper) 70%);
   --warn-tint:color-mix(in oklab,var(--warn),var(--paper) 70%);
   --fail-tint:color-mix(in oklab,var(--fail),var(--paper) 70%);
+    --ok-text:color-mix(in oklab,var(--ok),white 35%); --warn-text:color-mix(in oklab,var(--warn),white 35%); --fail-text:color-mix(in oklab,var(--fail),white 35%);
   color-scheme:dark;
 }
 
@@ -92,8 +101,8 @@ h1{font-size:var(--t-3xl)} h2{font-size:var(--t-2xl)} h3{font-size:var(--t-xl)} 
 h1 em,h2 em,h3 em,h4 em{font-style:italic; font-weight:400}
 p{margin:0 0 var(--s4)}
 a{color:var(--accent-deep); text-decoration-thickness:1px; text-underline-offset:3px}
-a:hover{color:var(--accent)}
-:focus-visible{outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--r-xs)}
+a:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent-mark); outline-offset:2px; border-radius:var(--r-xs)}
 ::selection{background:var(--accent-tint); color:var(--ink)}
 code,kbd,pre,.o-mono{font-family:var(--mono); font-size:.92em}
 .o-num{font-family:var(--mono); font-variant-numeric:tabular-nums}
@@ -108,7 +117,7 @@ hr,.o-rule{border:0; height:1px; background:var(--stone-2); margin:var(--s7) 0}
 .o-dateline{font-family:var(--mono); font-size:var(--t-xs); letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); margin-bottom:var(--s4)}
 .o-ticker{display:flex; gap:var(--s6); overflow:hidden; white-space:nowrap; padding:9px var(--s5);
   background:var(--taupe); color:#F6F5F2; font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase}
-.o-ticker > :nth-child(n+3){opacity:.75}
+.o-ticker > :nth-child(n+3){opacity:.9}
 @media (max-width:640px){.o-ticker > :nth-child(n+2){display:none}}
 
 /* ── Labels and small print: sentence case ── */
@@ -117,7 +126,7 @@ hr,.o-rule{border:0; height:1px; background:var(--stone-2); margin:var(--s7) 0}
 .o-lede{font-size:var(--t-lg); color:var(--ink-2); max-width:62ch}
 
 /* ── Text that types itself: add .o-typing; the cursor is the app's colour ── */
-.o-typing::after,.o-cursor{content:""; display:inline-block; width:2px; height:1.1em; background:var(--accent); margin-left:2px; vertical-align:-3px; animation:o-blink 1s steps(1) infinite}
+.o-typing::after,.o-cursor{content:""; display:inline-block; width:2px; height:1.1em; background:var(--accent-mark); margin-left:2px; vertical-align:-3px; animation:o-blink 1s steps(1) infinite}
 @keyframes o-blink{50%{opacity:0}}
 
 /* ── App bar: quiet, on the ground. Serif wordmark, text links, accent underline. ── */
@@ -125,7 +134,7 @@ hr,.o-rule{border:0; height:1px; background:var(--stone-2); margin:var(--s7) 0}
 .o-bar__spacer{flex:1}
 .o-bar a,.o-bar__link{font:inherit; font-size:var(--t-sm); color:var(--ink-2); text-decoration:none; background:none; border:0; padding:var(--s1) 0; cursor:pointer}
 .o-bar a:hover,.o-bar__link:hover{color:var(--ink)}
-.o-bar .is-current,.o-bar [aria-current]{color:var(--ink); text-decoration:underline; text-decoration-color:var(--accent); text-decoration-thickness:2px; text-underline-offset:7px}
+.o-bar .is-current,.o-bar [aria-current]{color:var(--ink); text-decoration:underline; text-decoration-color:var(--accent-mark); text-decoration-thickness:2px; text-underline-offset:7px}
 
 /* ── Page ── */
 .o-page{max-width:1080px; margin:0 auto; padding:var(--s6) var(--s5) var(--s8)}
@@ -137,21 +146,22 @@ hr,.o-rule{border:0; height:1px; background:var(--stone-2); margin:var(--s7) 0}
   border:0; border-radius:var(--r-sm); background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink-3);
   font:inherit; font-size:.9375rem; line-height:1; cursor:pointer; text-decoration:none; transition:background .15s,color .15s,box-shadow .15s}
 .o-btn:hover{box-shadow:inset 0 0 0 1px var(--ink); color:var(--ink)}
-.o-btn:disabled,.o-btn[aria-disabled="true"]{opacity:.45; cursor:not-allowed}
 .o-btn--primary{background:var(--ink); color:var(--on-ink); box-shadow:none}
 .o-btn--primary:hover{background:color-mix(in oklab,var(--ink),var(--accent) 22%); color:var(--on-ink); box-shadow:none}
-.o-btn--danger{background:var(--fail); color:#fff; box-shadow:none}
-.o-btn--danger:hover{background:color-mix(in oklab,var(--fail),black 12%); color:#fff; box-shadow:none}
+.o-btn--danger{background:var(--fail); color:var(--on-ink); box-shadow:none}
+.o-btn--danger:hover{background:color-mix(in oklab,var(--fail),var(--ink) 12%); color:var(--on-ink); box-shadow:none}
 .o-btn--quiet{box-shadow:none; color:var(--accent-deep); padding:0 var(--s1); text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1px}
-.o-btn--quiet:hover{box-shadow:none; color:var(--accent)}
+.o-btn--quiet:hover{box-shadow:none; color:var(--ink)}
 .o-btn--sm{min-height:34px; padding:0 var(--s4); font-size:var(--t-sm)}
 .o-btn--block{width:100%}
+/* Off but still readable: stone fill, grey words, no fade (v2.2). After the variants so it wins on hover too. */
+.o-btn:disabled,.o-btn[aria-disabled="true"],.o-btn:disabled:hover,.o-btn[aria-disabled="true"]:hover{background:var(--stone); color:var(--ink-3); box-shadow:none; text-decoration:none; cursor:not-allowed}
 
 /* ── Fields: a stone fill; paper and an accent ring when typing ── */
 .o-field{display:block; width:100%; min-height:46px; padding:var(--s3) var(--s4); border:0; border-radius:var(--r-md);
   background:var(--stone); color:var(--ink); font:inherit; box-shadow:inset 0 0 0 1.5px transparent; transition:background .15s,box-shadow .15s}
 .o-field::placeholder{color:var(--ink-3)}
-.o-field:focus{outline:none; background:var(--paper); box-shadow:inset 0 0 0 1.5px var(--accent)}
+.o-field:focus{outline:none; background:var(--paper); box-shadow:inset 0 0 0 1.5px var(--accent-mark)}
 textarea.o-field{min-height:140px; resize:vertical; line-height:1.6}
 
 /* ── Chips ── */
@@ -192,7 +202,7 @@ a.o-card:hover{filter:brightness(.98)}
 .o-tabs{display:flex; gap:var(--s5); border-bottom:1px solid var(--stone-2)}
 .o-tab{border:0; background:none; font:inherit; font-size:var(--t-sm); color:var(--ink-2); padding:var(--s2) 0; margin-bottom:-1px; cursor:pointer; border-bottom:2px solid transparent}
 .o-tab:hover{color:var(--ink)}
-.o-tab[aria-selected="true"],.o-tab.is-current{color:var(--ink); border-bottom-color:var(--accent)}
+.o-tab[aria-selected="true"],.o-tab.is-current{color:var(--ink); border-bottom-color:var(--accent-mark)}
 
 /* ── Stats ── */
 .o-stat{display:flex; flex-direction:column; gap:var(--s1)}
@@ -282,7 +292,7 @@ a.o-card:hover{filter:brightness(.98)}
 .o-rail__item .o-num{margin-left:auto; font-size:var(--t-xs); color:var(--ink-3)}
 .o-rail__item:hover{background:var(--stone); color:var(--ink)}
 .o-rail__item.is-current,.o-rail__item[aria-current]{background:var(--paper); color:var(--ink)}
-.o-rail__item.is-current i,.o-rail__item[aria-current] i{color:var(--accent)}
+.o-rail__item.is-current i,.o-rail__item[aria-current] i{color:var(--accent-mark)}
 .o-main{background:var(--paper); padding:var(--s6) var(--s6) var(--s7); min-width:0}
 .o-side{background:var(--ground); padding:var(--s5) var(--s4); min-width:0}
 .o-tabbar{display:none}
@@ -296,7 +306,7 @@ a.o-card:hover{filter:brightness(.98)}
     border:0; background:none; font:inherit; font-size:var(--t-xs); color:var(--ink-3); text-decoration:none; cursor:pointer}
   .o-tabbar i{font-size:24px}
   .o-tabbar .is-current,.o-tabbar [aria-current]{color:var(--ink)}
-  .o-tabbar .is-current i,.o-tabbar [aria-current] i{color:var(--accent)}
+  .o-tabbar .is-current i,.o-tabbar [aria-current] i{color:var(--accent-mark)}
 }
 
 /* ── Capture: one field for anything, with photo and mic buttons (Todoist's
@@ -304,11 +314,11 @@ a.o-card:hover{filter:brightness(.98)}
 .o-capture{display:flex; align-items:center; gap:var(--s2); background:var(--ground); border-radius:var(--r-md); padding:var(--s2) var(--s2) var(--s2) var(--s4); min-height:52px}
 .o-capture input,.o-capture textarea{flex:1; min-width:0; border:0; background:none; font:inherit; color:var(--ink); padding:var(--s2) 0; resize:none}
 .o-capture input:focus,.o-capture textarea:focus{outline:none}
-.o-capture:focus-within{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.o-capture:focus-within{box-shadow:inset 0 0 0 1.5px var(--accent-mark)}
 .o-capture__btn{display:grid; place-items:center; width:40px; height:40px; border:0; border-radius:var(--r-sm); background:none; color:var(--ink-2); cursor:pointer; font-size:22px}
 .o-capture__btn:hover{background:var(--stone); color:var(--ink)}
-.o-capture.is-listening{box-shadow:inset 0 0 0 1.5px var(--accent)}
-.o-capture.is-listening .o-capture__mic{background:var(--accent); color:var(--on-ink)}
+.o-capture.is-listening{box-shadow:inset 0 0 0 1.5px var(--accent-mark)}
+.o-capture.is-listening .o-capture__mic{background:var(--accent-mark); color:var(--on-ink)}
 
 /* ── Task row: round tick, the words, quiet meta, a time in mono on the right (Sunsama). ── */
 .o-tasks{list-style:none; margin:0; padding:0}
@@ -316,8 +326,8 @@ a.o-card:hover{filter:brightness(.98)}
 .o-task + .o-task{box-shadow:0 -1px 0 var(--stone)}
 .o-task__tick{flex:none; width:20px; height:20px; margin-top:2px; border:0; border-radius:50%; box-shadow:inset 0 0 0 1.5px var(--ink-3);
   background:none; color:transparent; display:grid; place-items:center; font-size:13px; cursor:pointer}
-.o-task__tick:hover{box-shadow:inset 0 0 0 1.5px var(--accent)}
-.o-task.is-done .o-task__tick{background:var(--accent); box-shadow:none; color:var(--on-ink)}
+.o-task__tick:hover{box-shadow:inset 0 0 0 1.5px var(--accent-mark)}
+.o-task.is-done .o-task__tick{background:var(--accent-mark); box-shadow:none; color:var(--on-ink)}
 .o-task__main{flex:1; min-width:0}
 .o-task__title{display:block}
 .o-task.is-done .o-task__title{color:var(--ink-3); text-decoration:line-through; text-decoration-color:var(--ink-dim)}
@@ -338,8 +348,8 @@ a.o-card:hover{filter:brightness(.98)}
 .o-day__block[data-tint]{background:color-mix(in oklab,var(--tint),var(--paper) 78%)}
 .o-day__block[data-tint="heather"]{--tint:var(--heather)} .o-day__block[data-tint="sea"]{--tint:var(--sea)} .o-day__block[data-tint="teal"]{--tint:var(--teal)}
 .o-day__block[data-tint="moss"]{--tint:var(--moss)} .o-day__block[data-tint="ochre"]{--tint:var(--ochre)} .o-day__block[data-tint="blossom"]{--tint:var(--blossom)}
-.o-day__now{position:absolute; left:36px; right:0; height:2px; background:var(--accent)}
-.o-day__now::before{content:""; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+.o-day__now{position:absolute; left:36px; right:0; height:2px; background:var(--accent-mark)}
+.o-day__now::before{content:""; position:absolute; left:-4px; top:-3px; width:8px; height:8px; border-radius:50%; background:var(--accent-mark)}
 
 /* ── Suggestion: a helper's proposal waiting for a yes. Nothing is filed until Stewart taps.
    .o-suggest > __said (with .o-meta) + __to (icon + one <span> of words) + __acts; .is-filed after. ── */
@@ -348,7 +358,7 @@ a.o-card:hover{filter:brightness(.98)}
 .o-suggest__said{margin:0 0 var(--s3)}
 .o-suggest__said .o-meta{display:block; margin-bottom:var(--s1)}
 .o-suggest__to{display:flex; align-items:flex-start; gap:var(--s2); margin-bottom:var(--s3); font-size:var(--t-sm)}
-.o-suggest__to i{flex:none; margin-top:1px; font-size:18px; color:var(--accent)}
+.o-suggest__to i{flex:none; margin-top:1px; font-size:18px; color:var(--accent-mark)}
 .o-suggest__to > span{flex:1; min-width:0}
 .o-suggest__acts{display:flex; flex-wrap:wrap; gap:var(--s2)}
 .o-suggest.is-filed{opacity:.55}
@@ -398,12 +408,12 @@ input {
   width: 100%; font: inherit; padding: 0.6rem 0.7rem; border-radius: 8px;
   border: 1px solid var(--stone); background: var(--ground); color: var(--ink);
 }
-input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--accent-mark); outline-offset: 2px; }
 button {
   font: inherit; cursor: pointer; border-radius: 8px; border: 0;
-  background: var(--accent); color: var(--paper); padding: 0.6rem 1rem; margin-top: 0.8rem;
+  background: var(--accent-mark); color: var(--on-ink); padding: 0.6rem 1rem; margin-top: 0.8rem;
 }
-button.link { background: none; color: var(--accent); padding: 0.3rem 0.4rem; margin: 0; }
+button.link { background: none; color: var(--accent-deep); padding: 0.3rem 0.4rem; margin: 0; }
 button.nav {
   background: none; color: var(--ink); border: 1px solid var(--stone);
   width: 2.2rem; height: 2.2rem; padding: 0; margin: 0; font-size: 1.2rem; line-height: 1;
@@ -414,7 +424,7 @@ button.nav {
 details { margin: 0.5rem 0; }
 
 .status { min-height: 1.4em; margin: 0.5rem 0; color: var(--ink-2); }
-.status.bad { color: var(--fail); }
+.status.bad { color: var(--fail-text); }
 
 /* Next two weeks */
 .upcoming { list-style: none; margin: 0; padding: 0; }
@@ -446,10 +456,10 @@ details { margin: 0.5rem 0; }
   display: flex; align-items: center; line-height: 1.15;
 }
 .day { grid-row: 1; text-align: center; font-size: 0.75rem; color: var(--ink-2); }
-.day.today { color: var(--accent); font-weight: 700; }
+.day.today { color: var(--accent-deep); font-weight: 700; }
 .cell { grid-row: 1; height: 100%; }
 .weekend { background: var(--weekend); }
-.cell.today { box-shadow: inset 2px 0 0 var(--accent); }
+.cell.today { box-shadow: inset 2px 0 0 var(--accent-mark); }
 .bar {
   grid-row: 1; height: 1.5rem; margin: 0 2px; border-radius: 6px; z-index: 1;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -488,10 +498,10 @@ details { margin: 0.5rem 0; }
 .feed-name { font-weight: 600; }
 .feed-state { font-weight: 600; text-align: right; }
 .feed-when { color: var(--ink-2); font-size: 0.9rem; grid-column: 1 / -1; }
-.feed-error { color: var(--fail); font-size: 0.9rem; grid-column: 1 / -1; }
-.feed-ok .feed-state { color: var(--ok); }
-.feed-stale .feed-state, .feed-never .feed-state { color: var(--warn); }
-.feed-failing .feed-state { color: var(--fail); }
+.feed-error { color: var(--fail-text); font-size: 0.9rem; grid-column: 1 / -1; }
+.feed-ok .feed-state { color: var(--ok-text); }
+.feed-stale .feed-state, .feed-never .feed-state { color: var(--warn-text); }
+.feed-failing .feed-state { color: var(--fail-text); }
 .feed-inactive .feed-state { color: var(--ink-2); }
 
 /* Money */
@@ -516,11 +526,11 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .gite-name { font-weight: 600; }
 .gite-sum { grid-column: 1 / -1; color: var(--ink-2); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
 .badge { font-size: 0.75rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: var(--r-xs); align-self: center; }
-.badge.classified { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
-.badge.unclassified { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.badge.classified { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok-text); }
+.badge.unclassified { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn-text); }
 .bankcheck { margin: 1rem 0 0; font-size: 0.9rem; }
-.bankcheck.ok { color: var(--ok); }
-.bankcheck.pending { color: var(--warn); }
+.bankcheck.ok { color: var(--ok-text); }
+.bankcheck.pending { color: var(--warn-text); }
 
 /* Money by category */
 .kinds, .kinds ul, .review { list-style: none; margin: 0; padding: 0; }
@@ -539,10 +549,10 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .rv-date { font-weight: 600; }
 .review .amt { text-align: right; font-weight: 600; }
 .rv-desc, .rv-why { grid-column: 1 / -1; font-size: 0.9rem; overflow-wrap: anywhere; }
-.rv-why { color: var(--warn); }
+.rv-why { color: var(--warn-text); }
 
 /* Guests */
-.hint-inline.prompt { color: var(--warn); font-weight: 600; }
+.hint-inline.prompt { color: var(--warn-text); font-weight: 600; }
 .guest-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
 .guest-list > li { padding: 0.75rem 0; border-top: 1px solid var(--stone); }
 .guest-list > li:first-child { border-top: 0; }
@@ -552,7 +562,7 @@ h3.sub { font-size: 0.95rem; margin: 1.25rem 0 0.25rem; }
 .g-when, .g-meta { color: var(--ink-2); font-size: 0.9rem; }
 .g-meta { display: flex; gap: 0.75rem; }
 .g-ref { font-variant-numeric: tabular-nums; }
-.g-phone { display: inline-block; margin-top: 0.3rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+.g-phone { display: inline-block; margin-top: 0.3rem; color: var(--accent-deep); font-variant-numeric: tabular-nums; }
 .g-email { margin-top: 0.3rem; font-size: 0.95rem; overflow-wrap: anywhere; }
 .g-form { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
 .g-form input { flex: 1 1 12rem; padding: 0.45rem 0.6rem; }
@@ -580,14 +590,14 @@ h3.sub, .money-bar h3 { font-family: var(--serif); font-size: 1.25rem; font-weig
 .narrow h2 { font-size: var(--t-3xl); margin-bottom: var(--s4); }
 label { font-size: var(--t-sm); font-weight: 700; color: var(--ink-2); margin: var(--s3) 0 var(--s2); }
 input { border: 0; border-radius: var(--r-md); background: var(--stone); min-height: 46px; padding: var(--s3) var(--s4); }
-input:focus, input:focus-visible { outline: none; background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--accent); }
+input:focus, input:focus-visible { outline: none; background: var(--paper); box-shadow: inset 0 0 0 1.5px var(--accent-mark); }
 input[type=checkbox], input[type=radio] { width: auto; min-height: 0; accent-color: var(--accent); }
 button { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink-3); border-radius: var(--r-sm); min-height: 44px; padding: 0 var(--s5); }
 button:hover { box-shadow: inset 0 0 0 1px var(--ink); }
 .narrow button[type=submit] { background: var(--ink); color: var(--on-ink); box-shadow: none; }
 .narrow button[type=submit]:hover { background: color-mix(in oklab, var(--ink), var(--accent) 22%); }
 button.link { box-shadow: none; color: var(--accent-deep); min-height: 36px; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
-button.link:hover { box-shadow: none; color: var(--accent); }
+button.link:hover { box-shadow: none; color: var(--accent-deep); }
 button.nav { border: 0; box-shadow: inset 0 0 0 1px var(--ink-3); width: 44px; height: 44px; border-radius: var(--r-sm); }
 .secret { font-family: var(--mono); background: var(--stone); border-radius: var(--r-sm); }
 .status { font-size: var(--t-sm); }
@@ -598,7 +608,7 @@ button.nav { border: 0; box-shadow: inset 0 0 0 1px var(--ink-3); width: 44px; h
 .name { font-weight: 700; font-size: var(--t-sm); }
 .day { font-family: var(--mono); font-size: var(--t-xs); }
 .day.today { color: var(--accent-deep); }
-.cell.today { box-shadow: inset 2px 0 0 var(--accent); }
+.cell.today { box-shadow: inset 2px 0 0 var(--accent-mark); }
 .bar { border-radius: var(--r-xs); font-size: var(--t-xs); font-weight: 700; }
 .bar-block { border: 0; }
 .key { border-radius: 2px; }
@@ -618,7 +628,7 @@ button.nav { border: 0; box-shadow: inset 0 0 0 1px var(--ink-3); width: 44px; h
 .g-phone { color: var(--accent-deep); }
 .g-form button { min-height: 40px; padding: 0 var(--s4); }
 .t-draft textarea { border: 0; border-radius: var(--r-sm); background: var(--stone); font-family: var(--type); }
-.t-draft textarea:focus { outline: none; background: var(--ground); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.t-draft textarea:focus { outline: none; background: var(--ground); box-shadow: inset 0 0 0 1.5px var(--accent-mark); }
 
 @media (max-width: 480px) {
   .figures { font-size: 0.8rem; }
@@ -634,21 +644,21 @@ button.nav { border: 0; box-shadow: inset 0 0 0 1px var(--ink-3); width: 44px; h
 
 /* Enquiries & holds (O4) */
 .state { font-weight: 600; font-size: 0.85rem; }
-.state.new, .state.lapsed { color: var(--fail); }
-.state.responded, .state.soon { color: var(--warn); }
-.state.converted, .state.ok, .state.confirmed { color: var(--ok); }
+.state.new, .state.lapsed { color: var(--fail-text); }
+.state.responded, .state.soon { color: var(--warn-text); }
+.state.converted, .state.ok, .state.confirmed { color: var(--ok-text); }
 .state.lost, .state.spam, .state.open { color: var(--ink-2); }
 
 /* To do (O5) */
 .t-due { font-weight: 600; font-size: 0.85rem; }
-.t-due.overdue { color: var(--fail); }
-.t-due.today { color: var(--warn); }
+.t-due.overdue { color: var(--fail-text); }
+.t-due.today { color: var(--warn-text); }
 .t-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; align-items: center; }
 .t-actions a { font-size: 0.9rem; }
 .t-flag { color: var(--turn); font-weight: 600; font-size: 0.85rem; }
-.t-missing { color: var(--warn); font-size: 0.85rem; }
+.t-missing { color: var(--warn-text); font-size: 0.85rem; }
 .t-draft { margin-top: 0.5rem; }
 .t-draft textarea { width: 100%; font: inherit; font-size: 0.9rem; padding: 0.5rem; border: 1px solid var(--stone); border-radius: 6px; background: var(--paper); color: var(--ink); }
 .kept-total { font-weight: 600; border-top: 1px solid var(--stone); }
-.owed .amt { color: var(--warn); }
+.owed .amt { color: var(--warn-text); }
 #kept > li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; }
